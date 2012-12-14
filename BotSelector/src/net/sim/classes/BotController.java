@@ -18,7 +18,7 @@ import org.lwjgl.opengl.GL11;
  */
 public class BotController implements BotMouseListener, BotKeyboardListener {
 
-	private static final int INITIAL_BOT_POPULATION = 3;
+	private static final int INITIAL_BOT_POPULATION = 100;
 	
 	private Random mRandom;
 	private int xMax, yMax, thetaMax;

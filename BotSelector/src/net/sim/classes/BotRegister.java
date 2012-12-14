@@ -37,9 +37,9 @@ public class BotRegister {
 					
 					double angle1 = botList.get(i).getTheta();
 					double angle2 = botList.get(j).getTheta();
-					double collisionAngle = 90-((angle1 + angle2)/2);
-					botList.get(i).setTheta((angle1 + collisionAngle)/2);
-					botList.get(j).setTheta((angle2 + collisionAngle)/2);
+					double collisionAngle = Math.PI-((angle1 + angle2)/2);
+					botList.get(i).setTheta(2 * collisionAngle + angle1);
+					botList.get(j).setTheta(2 * collisionAngle + angle2);
 				}
 			}
 		}

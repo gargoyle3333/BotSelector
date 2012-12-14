@@ -1,8 +1,7 @@
 package net.sim.classes;
 
-import java.util.Random;
-
-import org.lwjgl.opengl.*;;
+import org.lwjgl.opengl.Display;
+import org.lwjgl.opengl.GL11;
 
 public class Bot {
 	
@@ -11,9 +10,8 @@ public class Bot {
 	
 	private int screenWidth, screenHeight;
 	
-	private double x, y, theta, delta;
+	private double x, y, theta;
 	private BotController mBotController;
-	private Random mRandom;
 	private boolean selected, locked;
 	private boolean movingForward, rotatingClockwise, rotatingAntiClockwise;
 	
@@ -23,8 +21,6 @@ public class Bot {
 		this.x = x;
 		this.y = y;
 		this.theta = d;
-		delta = 0;
-		mRandom = new Random();
 		screenWidth = Display.getWidth();
 		screenHeight = Display.getHeight();
 	}
