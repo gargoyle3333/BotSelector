@@ -34,8 +34,13 @@ public class BotRegister {
 						.pow(botList.get(i).getSize()
 								+ botList.get(j).getSize(), 2)) {
 					System.out.println("Collision detected");
+					
+					double angle1 = botList.get(i).getTheta();
+					double angle2 = botList.get(j).getTheta();
+					double collisionAngle = 90-((angle1 + angle2)/2);
+					botList.get(i).setTheta((angle1 + collisionAngle)/2);
+					botList.get(j).setTheta((angle2 + collisionAngle)/2);
 				}
-				
 			}
 		}
 		// TODO bounce off each other

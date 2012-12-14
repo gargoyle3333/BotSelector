@@ -140,4 +140,9 @@ public class Bot {
 		return SIZE;
 	}
 
+	public void setTheta(double _theta) {
+		theta = _theta;
+		
+	}
+
 }
