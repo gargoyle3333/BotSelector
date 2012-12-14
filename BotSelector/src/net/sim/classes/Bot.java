@@ -5,8 +5,7 @@ import org.lwjgl.opengl.GL11;
 
 public class Bot {
 	
-	private static final float MAX_SPEED = 4.0F, MAX_ROTATION = 0.05F;
-	private static final int SIZE = 10;
+	private static final float MAX_SPEED = 2.0F, MAX_ROTATION = 0.05F;
 	
 	private int screenWidth, screenHeight;
 	
@@ -14,13 +13,15 @@ public class Bot {
 	private BotController mBotController;
 	private boolean selected, locked;
 	private boolean movingForward, rotatingClockwise, rotatingAntiClockwise;
+	private int size;
 	
-	public Bot(BotController botController, int x, int y, double d) {
+	public Bot(BotController botController, int x, int y, double d, int size) {
 		mBotController = botController;
 		mBotController.register(this);
 		this.x = x;
 		this.y = y;
 		this.theta = d;
+		this.size = size;
 		screenWidth = Display.getWidth();
 		screenHeight = Display.getHeight();
 	}
@@ -81,9 +82,9 @@ public class Bot {
 		
 		GL11.glBegin(GL11.GL_TRIANGLES);
 		
-		GL11.glVertex2f(0f, (float)SIZE);
-		GL11.glVertex2f((float)(SIZE * Math.sin(Math.toRadians(60))), (float)(-SIZE * Math.cos(Math.toRadians(60))));
-		GL11.glVertex2f((float)(-SIZE * Math.sin(Math.toRadians(60))), (float)((-SIZE * Math.cos(Math.toRadians(60)))));
+		GL11.glVertex2f(0f, (float)size);
+		GL11.glVertex2f((float)(size * Math.sin(Math.toRadians(60))), (float)(-size * Math.cos(Math.toRadians(60))));
+		GL11.glVertex2f((float)(-size * Math.sin(Math.toRadians(60))), (float)((-size * Math.cos(Math.toRadians(60)))));
 		
 		GL11.glEnd();
 		
@@ -133,7 +134,11 @@ public class Bot {
 	}
 	
 	public double getSize() {
-		return SIZE;
+		return size;
+	}
+	
+	public void increaseSize(double newSize) {
+		size += newSize;
 	}
 
 	public void setTheta(double _theta) {

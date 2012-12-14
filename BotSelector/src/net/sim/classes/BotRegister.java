@@ -3,23 +3,27 @@ package net.sim.classes;
 import java.util.ArrayList;
 
 /**
- * A model for storing bots in. 
+ * A model for storing bots in.
+ * 
  * @author mrh2
- *
+ * 
  */
 public class BotRegister {
-	
+
 	private ArrayList<Bot> botList;
+	private ArrayList<Integer> toRemove;
 	private int selected;
-	
+
 	public BotRegister() {
 		botList = new ArrayList<Bot>();
+		toRemove = new ArrayList<Integer>();
 		selected = -1;
 	}
-	
+
 	/**
-	 * To be called as a new bot is constructed, and never otherwise.
-	 * Else, the bot will be duplicated in its updates and movement.
+	 * To be called as a new bot is constructed, and never otherwise. Else, the
+	 * bot will be duplicated in its updates and movement.
+	 * 
 	 * @param newBot
 	 */
 	public void registerBot(Bot newBot) {
@@ -27,29 +31,46 @@ public class BotRegister {
 	}
 
 	public void update() {
-		// TODO detect collisions
-		for (int i = 0; i < botList.size()-1; i++) {
+		for (int i = 0; i < botList.size() - 1; i++) {
 			for (int j = i + 1; j < botList.size(); j++) {
 				if ((Math.pow(botList.get(i).getX() - botList.get(j).getX(), 2) + Math
 						.pow(botList.get(i).getY() - botList.get(j).getY(), 2)) < Math
 						.pow(botList.get(i).getSize()
 								+ botList.get(j).getSize(), 2)) {
-					System.out.println("Collision detected");
+					double sizeA = botList.get(i).getSize();
+					double sizeB = botList.get(j).getSize();
+					if (sizeA > sizeB) {
+						toRemove.add(j);
+						botList.get(i).increaseSize(sizeB);
+					} else if (sizeA < sizeB) {
+						toRemove.add(i);
+						botList.get(j).increaseSize(sizeA);
+					} else {
 						double angle1 = botList.get(i).getTheta();
 						double angle2 = botList.get(j).getTheta();
-						double collisionAngle = Math.PI-((angle1 + angle2)/2);
-						if (i != selected) botList.get(i).setTheta(2 * collisionAngle + angle1);
-						if (j != selected) botList.get(j).setTheta(2 * collisionAngle + angle2);
+						double collisionAngle = Math.PI - ((angle1 + angle2) / 2);
+						if (i != selected)
+							botList.get(i).setTheta(2 * collisionAngle + angle1);
+						if (j != selected)
+							botList.get(j).setTheta(2 * collisionAngle + angle2);
+					}
 				}
 			}
 		}
-		// TODO bounce off each other
+		for (int i : toRemove) {
+			botList.remove(i);
+			if (selected < i) selected--;
+			for (int j : toRemove) {
+				j--;
+			}
+		}
+		toRemove.clear();
 		for (Bot bot : botList) {
 			bot.update();
 			bot.draw();
 		}
 	}
-	
+
 	public Bot getBot(int p) {
 		return botList.get(p);
 	}
@@ -59,7 +80,7 @@ public class BotRegister {
 			botList.get(i).select();
 			selected = i;
 		}
-		
+
 	}
 
 	public void setSelectedMovingForward(boolean b) {

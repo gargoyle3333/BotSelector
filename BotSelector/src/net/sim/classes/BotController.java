@@ -18,10 +18,10 @@ import org.lwjgl.opengl.GL11;
  */
 public class BotController implements BotMouseListener, BotKeyboardListener {
 
-	private static final int INITIAL_BOT_POPULATION = 100;
+	private static final int INITIAL_BOT_POPULATION = 40;
 	
 	private Random mRandom;
-	private int xMax, yMax, thetaMax;
+	private int xMax, yMax, thetaMax, sizeMax, sizeMin;
 	
 	//Variables for structured game programming
 	private GameBoard mGameBoard;
@@ -34,10 +34,12 @@ public class BotController implements BotMouseListener, BotKeyboardListener {
 		xMax = Display.getWidth();
 		yMax = Display.getHeight();
 		thetaMax = 180;
+		sizeMax = 20;
+		sizeMin = 5;
 
 		mBotRegister = new BotRegister();
 		for (int i = 0; i < INITIAL_BOT_POPULATION; i++) {
-			new Bot(this, mRandom.nextInt(xMax), mRandom.nextInt(yMax), Math.toRadians(mRandom.nextInt(thetaMax)));
+			new Bot(this, mRandom.nextInt(xMax), mRandom.nextInt(yMax), Math.toRadians(mRandom.nextInt(thetaMax)), mRandom.nextInt(sizeMax - sizeMin) + sizeMin + 1);
 		}
 	}
 	
