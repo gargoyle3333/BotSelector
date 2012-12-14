@@ -10,6 +10,7 @@ import java.util.ArrayList;
 public class BotRegister {
 	
 	private ArrayList<Bot> botList;
+	private int selected;
 	
 	public BotRegister() {
 		botList = new ArrayList<Bot>();
@@ -33,6 +34,26 @@ public class BotRegister {
 	
 	public Bot getBot(int p) {
 		return botList.get(p);
+	}
+
+	public void selectBot(int i) {
+		if (i < botList.size()) {
+			botList.get(i).select();
+			selected = i;
+		}
+		
+	}
+
+	public void setSelectedMovingForward(boolean b) {
+		botList.get(selected).setMovingForward(b);
+	}
+
+	public void setSelectedRotatingClockwise(boolean b) {
+		botList.get(selected).setRotatingClockwise(b);
+	}
+
+	public void setSelectedRotatingAntiClockwise(boolean b) {
+		botList.get(selected).setRotatingAntiClockwise(b);
 	}
 
 }

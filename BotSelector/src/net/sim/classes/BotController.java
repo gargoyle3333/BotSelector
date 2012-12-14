@@ -18,7 +18,7 @@ import org.lwjgl.opengl.GL11;
  */
 public class BotController implements BotMouseListener, BotKeyboardListener {
 
-	private static final int INITIAL_BOT_POPULATION = 400;
+	private static final int INITIAL_BOT_POPULATION = 1;
 	
 	private Random mRandom;
 	private int xMax, yMax, thetaMax;
@@ -33,12 +33,13 @@ public class BotController implements BotMouseListener, BotKeyboardListener {
 		mRandom = new Random();
 		xMax = Display.getWidth();
 		yMax = Display.getHeight();
-		thetaMax = 360;
+		thetaMax = 180;
 
 		mBotRegister = new BotRegister();
 		for (int i = 0; i < INITIAL_BOT_POPULATION; i++) {
-			new Bot(this, mRandom.nextInt(xMax), mRandom.nextInt(yMax), mRandom.nextInt(thetaMax));
+			new Bot(this, mRandom.nextInt(xMax), mRandom.nextInt(yMax), Math.toRadians(mRandom.nextInt(thetaMax)));
 		}
+		mBotRegister.selectBot(0);
 	}
 	
 	public void start(){
@@ -56,17 +57,39 @@ public class BotController implements BotMouseListener, BotKeyboardListener {
 	// TODO remove
 	// Temporary method for moving a single bot.
 	public void move(int x, int y) {
-		mBotRegister.getBot(0).move(x,y);
+		//mBotRegister.getBot(0).move(x,y);
 	}
 
 	@Override
 	public void keyPressed(int key) {
-		System.out.printf("Key pressed: %s\n", Keyboard.getKeyName(key));
+		switch (key) {
+		case Keyboard.KEY_UP:
+			mBotRegister.setSelectedMovingForward(true);
+			break;
+		case Keyboard.KEY_RIGHT:
+			mBotRegister.setSelectedRotatingClockwise(true);
+			break;
+		case Keyboard.KEY_LEFT:
+			mBotRegister.setSelectedRotatingAntiClockwise(true);
+			break;
+		}
+//		System.out.printf("Key pressed: %s\n", Keyboard.getKeyName(key));
 	}
 
 	@Override
 	public void keyReleased(int key) {
-		System.out.printf("Key released: %s\n", Keyboard.getKeyName(key));
+		switch (key) {
+		case Keyboard.KEY_UP:
+			mBotRegister.setSelectedMovingForward(false);
+			break;
+		case Keyboard.KEY_RIGHT:
+			mBotRegister.setSelectedRotatingClockwise(false);
+			break;
+		case Keyboard.KEY_LEFT:
+			mBotRegister.setSelectedRotatingAntiClockwise(false);
+			break;
+		}
+//		System.out.printf("Key released: %s\n", Keyboard.getKeyName(key));
 	}
 
 	@Override
@@ -76,33 +99,33 @@ public class BotController implements BotMouseListener, BotKeyboardListener {
 
 	@Override
 	public void leftButtonClicked(int x, int y) {
-		System.out.printf("Left mouse button clicked at (%d,%d)\n", x,y);
+//		System.out.printf("Left mouse button clicked at (%d,%d)\n", x,y);
 	}
 
 	@Override
 	public void leftButtonReleased(int x, int y) {
-		System.out.printf("Left mouse button released at (%d,%d)\n", x,y);
+//		System.out.printf("Left mouse button released at (%d,%d)\n", x,y);
 	}
 
 	@Override
 	public void rightButtonClicked(int x, int y) {
-		System.out.printf("Right mouse button clicked at (%d,%d)\n", x,y);
+//		System.out.printf("Right mouse button clicked at (%d,%d)\n", x,y);
 	}
 
 	@Override
 	public void rightButtonReleased(int x, int y) {
-		System.out.printf("Right mouse button released at (%d,%d)\n", x,y);
+//		System.out.printf("Right mouse button released at (%d,%d)\n", x,y);
 		
 	}
 
 	@Override
 	public void leftDragged(int x, int y) {
-		System.out.printf("Left mouse button dragged to (%d,%d)\n", x,y);
+//		System.out.printf("Left mouse button dragged to (%d,%d)\n", x,y);
 	}
 
 	@Override
 	public void rightDragged(int x, int y) {
-		System.out.printf("Right mouse button dragged to (%d,%d)\n", x,y);
+//		System.out.printf("Right mouse button dragged to (%d,%d)\n", x,y);
 	}
 	
 	public static void main(String[] args) {

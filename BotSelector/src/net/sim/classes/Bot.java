@@ -6,40 +6,71 @@ import org.lwjgl.opengl.*;;
 
 public class Bot {
 	
-	private static final float MAX_SPEED = 0.3F, MAX_ROTATION = 3;
+	private static final float MAX_SPEED = 2.0F, MAX_ROTATION = 0.05F;
+	private static final int SIZE = 10;
 	
-	private double x, y, theta;
+	private int screenWidth, screenHeight;
+	
+	private double x, y, theta, delta;
 	private BotController mBotController;
 	private Random mRandom;
 	private boolean selected, locked;
+	private boolean movingForward, rotatingClockwise, rotatingAntiClockwise;
 	
-	public Bot(BotController botController, int x, int y, int theta) {
+	public Bot(BotController botController, int x, int y, double d) {
 		mBotController = botController;
 		mBotController.register(this);
 		this.x = x;
 		this.y = y;
-		this.theta = theta;
+		this.theta = d;
+		delta = 0;
 		mRandom = new Random();
+		screenWidth = Display.getWidth();
+		screenHeight = Display.getHeight();
 	}
 
 	public void update() {
-		//TODO update fields
 		if (!locked) {
-			x += MAX_SPEED * Math.sin(theta);
-			y += MAX_SPEED * Math.cos(theta);
-			if (!selected) theta += mRandom.nextInt((int)(2 * MAX_ROTATION)+1)-MAX_ROTATION;
+			if (selected) {
+				if (movingForward) {
+					x += MAX_SPEED * Math.sin(theta);
+					x = x > screenWidth ? screenWidth : x;
+					x = x < 0 ? 0 : x;
+					
+					y += MAX_SPEED * Math.cos(theta);
+					y = y > screenHeight ? screenHeight : y;
+					y = y < 0 ? 0 : y;
+				}
+				if (rotatingClockwise) {
+					theta = (theta + MAX_ROTATION);
+					theta = theta > (Math.PI) ? (-1 * Math.PI) : theta;
+				}
+				if (rotatingAntiClockwise) {
+					theta = (theta - MAX_ROTATION);
+					theta = theta < (-1 * Math.PI) ? (Math.PI) : theta;
+				}
+			}
 		}
 	}
 	
 	public void draw() {
-		// TODO draw
-		int size = 10;
-		GL11.glBegin(GL11.GL_TRIANGLES);
 		if (selected) GL11.glColor3f(1.0F, 0.0F, 0.0F);
-		GL11.glVertex2f((float)x, (float)(y + (1.3 * size)));
-		GL11.glVertex2f((float)(x + (size * Math.sin(30))), (float)(y - (size * Math.cos(30))));
-		GL11.glVertex2f((float)(x - (size * Math.sin(30))), (float)(y - (size * Math.cos(30))));
+		else GL11.glColor3f(1.0F, 1.0F, 1.0F);
+
+		GL11.glPushMatrix();
+		GL11.glTranslated(x,y,0);
+		GL11.glRotated(Math.toDegrees(theta), 0, 0, -1);
+		
+		GL11.glBegin(GL11.GL_TRIANGLES);
+		
+		GL11.glVertex2f(0f, (float)SIZE);
+		GL11.glVertex2f((float)(SIZE * Math.sin(Math.toRadians(60))), (float)(-SIZE * Math.cos(Math.toRadians(60))));
+		GL11.glVertex2f((float)(-SIZE * Math.sin(Math.toRadians(60))), (float)((-SIZE * Math.cos(Math.toRadians(60)))));
+		
 		GL11.glEnd();
+		
+		GL11.glPopMatrix();
+		System.out.println(Math.toDegrees(theta));
 	}
 	
 	public void select() {
@@ -58,9 +89,18 @@ public class Bot {
 		locked = false;
 	}
 
-	public void move(int x2, int y2) {
-		x = x2;
-		y = y2;
+	public void setMovingForward(boolean b) {
+		movingForward = b;
+	}
+
+	public void setRotatingClockwise(boolean b) {
+		if (b && !rotatingAntiClockwise) rotatingClockwise = true;
+		else rotatingClockwise = false;
+	}
+
+	public void setRotatingAntiClockwise(boolean b) {
+		if (b && !rotatingClockwise) rotatingAntiClockwise = true;
+		else rotatingAntiClockwise = false;
 	}
 
 }
