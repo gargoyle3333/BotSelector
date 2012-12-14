@@ -1,11 +1,21 @@
 package net.mike.blah;
 
+import net.sim.interfaces.BotKeyboardListener;
+import net.sim.interfaces.BotMouseListener;
+
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
+import org.lwjgl.opengl.GL11;
 
 public class GameBoard {
+	
+	private BotMouseListener mMouseListener;
+	private BotKeyboardListener mKeyboardListener;
+	
+	// Constants
+	private static final int FRAMES_PER_SECOND = 60;
 	
 	// Fields for mouse
 	private boolean leftMouseDown, rightMouseDown;
@@ -14,77 +24,75 @@ public class GameBoard {
 	//Fields for keyboard
 	private boolean shiftHeldDown = false;
 	
-	public void start() {
+	public GameBoard(BotMouseListener mouseListener, BotKeyboardListener keyboardListener) {
 		try {
 			Display.setDisplayModeAndFullscreen(new DisplayMode(800,600));
 			Display.create();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		while (!Display.isCloseRequested()) {
-			pollMouse();
-			pollKeyboard();
-			Display.update();
-		}
+		GL11.glMatrixMode(GL11.GL_PROJECTION);
+		GL11.glLoadIdentity();
+		GL11.glOrtho(0, 800, 0, 600, 1, -1);
+		GL11.glMatrixMode(GL11.GL_MODELVIEW);
 		
+		mMouseListener = mouseListener;
+		mKeyboardListener = keyboardListener;
+	}
+	
+	
+	public void update() {
+		pollMouse();
+		pollKeyboard();
+		Display.update();
+		Display.sync(FRAMES_PER_SECOND);
 	}
 	
 	private void pollMouse() {
-			if (((currentX = Mouse.getX()) != x) || ((currentY = Mouse.getY()) != y)) {
-				x = currentX;
-				y = currentY;
-				if (leftMouseDown || rightMouseDown) {
-					System.out.printf("Mouse dragged to new location (%d,%d)\n",x,y);
-					// TODO handle event MouseDragged
-				}
+		if (((currentX = Mouse.getX()) != x)
+				|| ((currentY = Mouse.getY()) != y)) {
+			x = currentX;
+			y = currentY;
+			if (leftMouseDown) mMouseListener.leftDragged(x, y);
+			if (rightMouseDown) mMouseListener.rightDragged(x, y);
+		}
+		if (Mouse.isButtonDown(0) ^ leftMouseDown) {
+			leftMouseDown = Mouse.isButtonDown(0);
+			if (leftMouseDown) {
+				mMouseListener.leftButtonClicked(x, y);
+			} else {
+				mMouseListener.leftButtonReleased(x, y);
 			}
-			if (Mouse.isButtonDown(0) ^ leftMouseDown) {
-				leftMouseDown = Mouse.isButtonDown(0);
-				if (leftMouseDown) {
-					// TODO handle event left button clicked
-					System.out.printf("Left mouse button clicked at %d,%d)\n",x,y);
-				} else {
-					// TODO handle event left button released
-					System.out.printf("Left mouse button released at %d,%d)\n",x,y);
-				}
+		}
+		if (Mouse.isButtonDown(1) ^ rightMouseDown) {
+			rightMouseDown = Mouse.isButtonDown(1);
+			if (rightMouseDown) {
+				mMouseListener.rightButtonClicked(x, y);
+			} else {
+				mMouseListener.rightButtonReleased(x, y);
 			}
-			if (Mouse.isButtonDown(1) ^ rightMouseDown) {
-				rightMouseDown = Mouse.isButtonDown(1);
-				if (rightMouseDown) {
-					// TODO handle event right button clicked
-					System.out.printf("Right mouse button clicked at %d,%d)\n",x,y);
-				} else {
-					// TODO handle event right button released
-					System.out.printf("Right mouse button released %d,%d)\n",x,y);
-				}
-			}
+		}
 	}
 
 	private boolean pollKeyboard() {
 		int key;
 		while (Keyboard.next()) {
 			key = Keyboard.getEventKey();
-			if ((key == Keyboard.KEY_LSHIFT) || (key == Keyboard.KEY_RSHIFT)) {
-				shiftHeldDown = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT);
-			}
-			if (key == Keyboard.KEY_CAPITAL) shiftHeldDown = Keyboard.isKeyDown(Keyboard.KEY_CAPITAL);
 			if (Keyboard.isKeyDown(key)) {
-				System.out.printf("Key pressed: %s\n", correctCase(Keyboard.getKeyName(key), shiftHeldDown));
+				mKeyboardListener.keyPressed(key);
 			} else {
-				System.out.printf("Key released: %s\n", correctCase(Keyboard.getKeyName(key), shiftHeldDown));
+				mKeyboardListener.keyReleased(key);
+				mKeyboardListener.keyTyped(key);
 			}
 		}
 		return false;
 	}
-	
-	private String correctCase(String input, boolean capital) {
-		if (capital) return input.toUpperCase();
-		else return input.toLowerCase();
-	}
-	
-	public static void main(String[] args) {
-		GameBoard gameboard = new GameBoard();
-		gameboard.start();
-	}
+
+//	private String correctCase(String input, boolean capital) {
+//		if (capital)
+//			return input.toUpperCase();
+//		else
+//			return input.toLowerCase();
+//	}
 
 }
