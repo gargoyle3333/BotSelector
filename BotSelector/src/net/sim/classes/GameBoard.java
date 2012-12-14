@@ -1,4 +1,4 @@
-package net.mike.blah;
+package net.sim.classes;
 
 import net.sim.interfaces.BotKeyboardListener;
 import net.sim.interfaces.BotMouseListener;
@@ -20,9 +20,6 @@ public class GameBoard {
 	// Fields for mouse
 	private boolean leftMouseDown, rightMouseDown;
 	private int x,y, currentX, currentY;
-	
-	//Fields for keyboard
-	private boolean shiftHeldDown = false;
 	
 	public GameBoard(BotMouseListener mouseListener, BotKeyboardListener keyboardListener) {
 		try {

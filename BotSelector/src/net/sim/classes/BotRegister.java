@@ -1,4 +1,4 @@
-package net.mike.blah;
+package net.sim.classes;
 
 import java.util.ArrayList;
 
