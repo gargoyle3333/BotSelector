@@ -49,6 +49,28 @@ public class Bot {
 					theta = (theta - MAX_ROTATION);
 					theta = theta < (-1 * Math.PI) ? (Math.PI) : theta;
 				}
+			} else {
+				x += MAX_SPEED * Math.sin(theta);
+				if (x > screenWidth) {
+					x = screenWidth;
+					theta = -1 * theta;
+				}
+				if (x < 0) {
+					x = 0;
+					theta = -1 * theta;
+				}
+				
+				y += MAX_SPEED * Math.cos(theta);
+				if (y > screenHeight) {
+					y = screenHeight;
+					theta = Math.IEEEremainder(Math.PI - theta, 2* Math.PI);
+				}
+				if (y < 0) {
+					y = 0;
+					theta = Math.IEEEremainder(Math.PI - theta, 2* Math.PI);
+				}
+				y = y > screenHeight ? screenHeight : y;
+				y = y < 0 ? 0 : y;
 			}
 		}
 	}
@@ -70,7 +92,6 @@ public class Bot {
 		GL11.glEnd();
 		
 		GL11.glPopMatrix();
-		System.out.println(Math.toDegrees(theta));
 	}
 	
 	public void select() {
@@ -101,6 +122,22 @@ public class Bot {
 	public void setRotatingAntiClockwise(boolean b) {
 		if (b && !rotatingClockwise) rotatingAntiClockwise = true;
 		else rotatingAntiClockwise = false;
+	}
+
+	public double getX() {
+		return x;
+	}
+	
+	public double getY() {
+		return y;
+	}
+	
+	public double getTheta() {
+		return theta;
+	}
+	
+	public double getSize() {
+		return SIZE;
 	}
 
 }

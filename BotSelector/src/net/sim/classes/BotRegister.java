@@ -26,6 +26,19 @@ public class BotRegister {
 	}
 
 	public void update() {
+		// TODO detect collisions
+		for (int i = 0; i < botList.size()-1; i++) {
+			for (int j = i + 1; j < botList.size(); j++) {
+				if ((Math.pow(botList.get(i).getX() - botList.get(j).getX(), 2) + Math
+						.pow(botList.get(i).getY() - botList.get(j).getY(), 2)) < Math
+						.pow(botList.get(i).getSize()
+								+ botList.get(j).getSize(), 2)) {
+					System.out.println("Collision detected");
+				}
+				
+			}
+		}
+		// TODO bounce off each other
 		for (Bot bot : botList) {
 			bot.update();
 			bot.draw();
