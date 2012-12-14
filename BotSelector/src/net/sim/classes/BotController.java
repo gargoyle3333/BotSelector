@@ -99,12 +99,13 @@ public class BotController implements BotMouseListener, BotKeyboardListener {
 
 	@Override
 	public void leftButtonClicked(int x, int y) {
+		mBotRegister.pickupBotNearest(x,y);
 //		System.out.printf("Left mouse button clicked at (%d,%d)\n", x,y);
 	}
 
 	@Override
 	public void leftButtonReleased(int x, int y) {
-//		System.out.printf("Left mouse button released at (%d,%d)\n", x,y);
+		mBotRegister.release();
 	}
 
 	@Override
@@ -120,7 +121,7 @@ public class BotController implements BotMouseListener, BotKeyboardListener {
 
 	@Override
 	public void leftDragged(int x, int y) {
-//		System.out.printf("Left mouse button dragged to (%d,%d)\n", x,y);
+		mBotRegister.dragSelected(x,y);
 	}
 
 	@Override

@@ -138,7 +138,14 @@ public class Bot {
 
 	public void setTheta(double _theta) {
 		theta = _theta;
-		
+	}
+	
+	public void setX(double x) {
+		this.x = x;
 	}
 
+	public void setY(double y) {
+		this.y = y;
+	}
+	
 }

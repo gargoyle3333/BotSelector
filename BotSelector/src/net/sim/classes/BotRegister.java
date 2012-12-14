@@ -74,4 +74,32 @@ public class BotRegister {
 		botList.get(selected).setRotatingAntiClockwise(b);
 	}
 
+	public void pickupBotNearest(int x, int y) {
+		int nearestBotIndex = 0;
+		double nearestDistance = 500000;
+		for (Bot bot : botList) {
+			double currentXDistSquared = Math.pow(bot.getX() - x, 2);
+			double currentYDistSquared = Math.pow(bot.getY() - y, 2);
+			if (currentXDistSquared + currentYDistSquared < nearestDistance) {
+				nearestDistance = currentXDistSquared + currentYDistSquared;
+				nearestBotIndex = botList.indexOf(bot);
+			}
+		}
+		botList.get(selected).deselect();
+		selected = nearestBotIndex;
+		botList.get(selected).select();
+		botList.get(selected).lock();
+		botList.get(selected).setX(x);
+		botList.get(selected).setY(y);
+	}
+
+	public void release() {
+		botList.get(selected).unlock();
+	}
+
+	public void dragSelected(int x, int y) {
+		botList.get(selected).setX(x);
+		botList.get(selected).setY(y);
+	}
+
 }
