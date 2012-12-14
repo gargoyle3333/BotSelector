@@ -14,6 +14,7 @@ public class BotRegister {
 	
 	public BotRegister() {
 		botList = new ArrayList<Bot>();
+		selected = -1;
 	}
 	
 	/**
@@ -34,12 +35,11 @@ public class BotRegister {
 						.pow(botList.get(i).getSize()
 								+ botList.get(j).getSize(), 2)) {
 					System.out.println("Collision detected");
-					
-					double angle1 = botList.get(i).getTheta();
-					double angle2 = botList.get(j).getTheta();
-					double collisionAngle = Math.PI-((angle1 + angle2)/2);
-					botList.get(i).setTheta(2 * collisionAngle + angle1);
-					botList.get(j).setTheta(2 * collisionAngle + angle2);
+						double angle1 = botList.get(i).getTheta();
+						double angle2 = botList.get(j).getTheta();
+						double collisionAngle = Math.PI-((angle1 + angle2)/2);
+						if (i != selected) botList.get(i).setTheta(2 * collisionAngle + angle1);
+						if (j != selected) botList.get(j).setTheta(2 * collisionAngle + angle2);
 				}
 			}
 		}
@@ -85,7 +85,8 @@ public class BotRegister {
 				nearestBotIndex = botList.indexOf(bot);
 			}
 		}
-		botList.get(selected).deselect();
+		if (selected >= 0)
+			botList.get(selected).deselect();
 		selected = nearestBotIndex;
 		botList.get(selected).select();
 		botList.get(selected).lock();

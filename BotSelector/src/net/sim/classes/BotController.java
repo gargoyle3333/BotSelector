@@ -39,7 +39,6 @@ public class BotController implements BotMouseListener, BotKeyboardListener {
 		for (int i = 0; i < INITIAL_BOT_POPULATION; i++) {
 			new Bot(this, mRandom.nextInt(xMax), mRandom.nextInt(yMax), Math.toRadians(mRandom.nextInt(thetaMax)));
 		}
-		mBotRegister.selectBot(0);
 	}
 	
 	public void start(){

@@ -5,7 +5,7 @@ import org.lwjgl.opengl.GL11;
 
 public class Bot {
 	
-	private static final float MAX_SPEED = 2.0F, MAX_ROTATION = 0.05F;
+	private static final float MAX_SPEED = 4.0F, MAX_ROTATION = 0.05F;
 	private static final int SIZE = 10;
 	
 	private int screenWidth, screenHeight;
