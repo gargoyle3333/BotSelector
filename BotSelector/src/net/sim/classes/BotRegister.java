@@ -12,12 +12,12 @@ public class BotRegister {
 
 	private ArrayList<Bot> botList;
 	private ArrayList<Integer> toRemove;
-	private int selected;
+	private Bot selected;
 
 	public BotRegister() {
 		botList = new ArrayList<Bot>();
 		toRemove = new ArrayList<Integer>();
-		selected = -1;
+		selected = null;
 	}
 
 	/**
@@ -33,33 +33,31 @@ public class BotRegister {
 	public void update() {
 		for (int i = 0; i < botList.size() - 1; i++) {
 			for (int j = i + 1; j < botList.size(); j++) {
-				if ((Math.pow(botList.get(i).getX() - botList.get(j).getX(), 2) + Math
-						.pow(botList.get(i).getY() - botList.get(j).getY(), 2)) < Math
-						.pow(botList.get(i).getSize()
-								+ botList.get(j).getSize(), 2)) {
-					double sizeA = botList.get(i).getSize();
-					double sizeB = botList.get(j).getSize();
+				Bot a = botList.get(i), b = botList.get(j);
+				double dx = a.getX() - b.getX(), dy = a.getY() - b.getY();
+				double sizeA = a.getSize(), sizeB = b.getSize();
+				if (dx * dx + dy * dy < (sizeA + sizeB) * (sizeA + sizeB)) {
 					if (sizeA > sizeB) {
 						toRemove.add(j);
-						botList.get(i).increaseSize(sizeB);
+						a.increaseSize(sizeB);
 					} else if (sizeA < sizeB) {
 						toRemove.add(i);
-						botList.get(j).increaseSize(sizeA);
+						b.increaseSize(sizeA);
 					} else {
-						double angle1 = botList.get(i).getTheta();
-						double angle2 = botList.get(j).getTheta();
-						double collisionAngle = Math.PI - ((angle1 + angle2) / 2);
-						if (i != selected)
-							botList.get(i).setTheta(2 * collisionAngle + angle1);
-						if (j != selected)
-							botList.get(j).setTheta(2 * collisionAngle + angle2);
+						double angle1 = a.getTheta();
+						double angle2 = b.getTheta();
+						double collisionAngle = Math.PI
+								- ((angle1 + angle2) / 2);
+						if (a != selected)
+							a.setTheta(2 * collisionAngle + angle1);
+						if (b != selected)
+							b.setTheta(2 * collisionAngle + angle2);
 					}
 				}
 			}
 		}
 		for (int i : toRemove) {
 			botList.remove(i);
-			if (selected < i) selected--;
 			for (int j : toRemove) {
 				j--;
 			}
@@ -77,51 +75,52 @@ public class BotRegister {
 
 	public void selectBot(int i) {
 		if (i < botList.size()) {
-			botList.get(i).select();
-			selected = i;
+			selected = botList.get(i);
+			selected.select();
 		}
 
 	}
 
 	public void setSelectedMovingForward(boolean b) {
-		botList.get(selected).setMovingForward(b);
+		selected.setMovingForward(b);
 	}
 
 	public void setSelectedRotatingClockwise(boolean b) {
-		botList.get(selected).setRotatingClockwise(b);
+		selected.setRotatingClockwise(b);
 	}
 
 	public void setSelectedRotatingAntiClockwise(boolean b) {
-		botList.get(selected).setRotatingAntiClockwise(b);
+		selected.setRotatingAntiClockwise(b);
 	}
 
 	public void pickupBotNearest(int x, int y) {
-		int nearestBotIndex = 0;
-		double nearestDistance = 500000;
+		Bot nearestBot = null;
+		double nearestDistance = Double.POSITIVE_INFINITY;
 		for (Bot bot : botList) {
 			double currentXDistSquared = Math.pow(bot.getX() - x, 2);
 			double currentYDistSquared = Math.pow(bot.getY() - y, 2);
 			if (currentXDistSquared + currentYDistSquared < nearestDistance) {
 				nearestDistance = currentXDistSquared + currentYDistSquared;
-				nearestBotIndex = botList.indexOf(bot);
+				nearestBot = bot;
 			}
 		}
-		if (selected >= 0)
-			botList.get(selected).deselect();
-		selected = nearestBotIndex;
-		botList.get(selected).select();
-		botList.get(selected).lock();
-		botList.get(selected).setX(x);
-		botList.get(selected).setY(y);
+		if (selected != null)
+			selected.deselect();
+		
+		//This will NullPointer if the list is empty
+		selected = nearestBot;
+		selected.select();
+		selected.lock();
+		selected.setX(x);
+		selected.setY(y);
 	}
 
 	public void release() {
-		botList.get(selected).unlock();
+		selected.unlock();
 	}
 
 	public void dragSelected(int x, int y) {
-		botList.get(selected).setX(x);
-		botList.get(selected).setY(y);
+		selected.setX(x);
+		selected.setY(y);
 	}
-
 }
