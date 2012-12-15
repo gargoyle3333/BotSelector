@@ -70,6 +70,10 @@ public class Bot {
 				y = y < 0 ? 0 : y;
 			}
 		}
+		if (size > 11 && !selected) { // clone!
+			new Bot(mBotController, (int)(x+12), (int)(y+12), theta+0.04F, size/2);
+			size = size/2;
+		}
 	}
 	
 	public void draw() {

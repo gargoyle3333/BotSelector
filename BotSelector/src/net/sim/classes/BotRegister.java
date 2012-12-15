@@ -10,13 +10,13 @@ import java.util.ArrayList;
  */
 public class BotRegister {
 
-	private ArrayList<Bot> botList;
-	private ArrayList<Integer> toRemove;
+	private ArrayList<Bot> botList, toAdd, toRemove;
 	private int selected;
 
 	public BotRegister() {
 		botList = new ArrayList<Bot>();
-		toRemove = new ArrayList<Integer>();
+		toAdd = new ArrayList<Bot>();
+		toRemove = new ArrayList<Bot>();
 		selected = -1;
 	}
 
@@ -27,10 +27,19 @@ public class BotRegister {
 	 * @param newBot
 	 */
 	public void registerBot(Bot newBot) {
-		botList.add(newBot);
+		toAdd.add(newBot);
 	}
 
 	public void update() {
+		try {
+			if (toAdd.size() > 0) {
+				botList.addAll(toAdd);
+				toAdd.clear();
+				toAdd.clear();
+			}
+		} catch (Exception e) {
+			System.out.println("toAdd size: " + toAdd.size());
+		}
 		for (int i = 0; i < botList.size() - 1; i++) {
 			for (int j = i + 1; j < botList.size(); j++) {
 				if ((Math.pow(botList.get(i).getX() - botList.get(j).getX(), 2) + Math
@@ -40,31 +49,35 @@ public class BotRegister {
 					double sizeA = botList.get(i).getSize();
 					double sizeB = botList.get(j).getSize();
 					if (sizeA > sizeB) {
-						toRemove.add(j);
+						toRemove.add(botList.get(j));
 						botList.get(i).increaseSize(sizeB);
 					} else if (sizeA < sizeB) {
-						toRemove.add(i);
+						toRemove.add(botList.get(i));
 						botList.get(j).increaseSize(sizeA);
 					} else {
 						double angle1 = botList.get(i).getTheta();
 						double angle2 = botList.get(j).getTheta();
-						double collisionAngle = Math.PI - ((angle1 + angle2) / 2);
+						double collisionAngle = Math.PI
+								- ((angle1 + angle2) / 2);
 						if (i != selected)
-							botList.get(i).setTheta(2 * collisionAngle + angle1);
+							botList.get(i)
+									.setTheta(2 * collisionAngle + angle1);
 						if (j != selected)
-							botList.get(j).setTheta(2 * collisionAngle + angle2);
+							botList.get(j)
+									.setTheta(2 * collisionAngle + angle2);
 					}
 				}
 			}
 		}
-		for (int i : toRemove) {
-			botList.remove(i);
-			if (selected < i) selected--;
-			for (int j : toRemove) {
-				j--;
+		try {
+			if (toRemove.size() > 0) {
+				botList.removeAll(toRemove);
+				toRemove.clear();
 			}
+		} catch (Exception e) {
+			System.out.println("Error removing bots. toRemove size: "
+					+ toRemove.size());
 		}
-		toRemove.clear();
 		for (Bot bot : botList) {
 			bot.update();
 			bot.draw();
