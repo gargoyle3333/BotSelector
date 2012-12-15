@@ -10,13 +10,13 @@ import java.util.ArrayList;
  */
 public class BotRegister {
 
-	private ArrayList<Bot> botList;
-	private ArrayList<Integer> toRemove;
+	private ArrayList<Bot> botList, toAdd, toRemove;
 	private Bot selected;
 
 	public BotRegister() {
 		botList = new ArrayList<Bot>();
-		toRemove = new ArrayList<Integer>();
+		toAdd = new ArrayList<Bot>();
+		toRemove = new ArrayList<Bot>();
 		selected = null;
 	}
 
@@ -27,10 +27,14 @@ public class BotRegister {
 	 * @param newBot
 	 */
 	public void registerBot(Bot newBot) {
-		botList.add(newBot);
+		toAdd.add(newBot);
 	}
 
 	public void update() {
+		if (toAdd.size() > 0) {
+			botList.addAll(toAdd);
+			toAdd.clear();
+		}
 		for (int i = 0; i < botList.size() - 1; i++) {
 			for (int j = i + 1; j < botList.size(); j++) {
 				Bot a = botList.get(i), b = botList.get(j);
@@ -38,10 +42,10 @@ public class BotRegister {
 				double sizeA = a.getSize(), sizeB = b.getSize();
 				if (dx * dx + dy * dy < (sizeA + sizeB) * (sizeA + sizeB)) {
 					if (sizeA > sizeB) {
-						toRemove.add(j);
+						toRemove.add(b);
 						a.increaseSize(sizeB);
 					} else if (sizeA < sizeB) {
-						toRemove.add(i);
+						toRemove.add(a);
 						b.increaseSize(sizeA);
 					} else {
 						double angle1 = a.getTheta();
@@ -56,13 +60,10 @@ public class BotRegister {
 				}
 			}
 		}
-		for (int i : toRemove) {
-			botList.remove(i);
-			for (int j : toRemove) {
-				j--;
-			}
-		}
+
+		botList.removeAll(toRemove);
 		toRemove.clear();
+
 		for (Bot bot : botList) {
 			bot.update();
 			bot.draw();
@@ -78,7 +79,6 @@ public class BotRegister {
 			selected = botList.get(i);
 			selected.select();
 		}
-
 	}
 
 	public void setSelectedMovingForward(boolean b) {
