@@ -40,21 +40,21 @@ public class Bot {
 				}
 				if (rotatingClockwise) {
 					theta = (theta + MAX_ROTATION);
-					theta = theta > (Math.PI) ? (-1 * Math.PI) : theta;
+					theta = theta > Math.PI ? -Math.PI : theta;
 				}
 				if (rotatingAntiClockwise) {
 					theta = (theta - MAX_ROTATION);
-					theta = theta < (-1 * Math.PI) ? (Math.PI) : theta;
+					theta = theta < -Math.PI ? Math.PI : theta;
 				}
 			} else {
 				x += MAX_SPEED * Math.sin(theta);
 				if (x > screenWidth) {
 					x = screenWidth;
-					theta = -1 * theta;
+					theta = -theta;
 				}
 				if (x < 0) {
 					x = 0;
-					theta = -1 * theta;
+					theta = -theta;
 				}
 				
 				y += MAX_SPEED * Math.cos(theta);
@@ -66,8 +66,6 @@ public class Bot {
 					y = 0;
 					theta = Math.IEEEremainder(Math.PI - theta, 2* Math.PI);
 				}
-				y = y > screenHeight ? screenHeight : y;
-				y = y < 0 ? 0 : y;
 			}
 		}
 	}
@@ -84,7 +82,7 @@ public class Bot {
 		
 		GL11.glVertex2f(0f, (float)size);
 		GL11.glVertex2f((float)(size * Math.sin(Math.toRadians(60))), (float)(-size * Math.cos(Math.toRadians(60))));
-		GL11.glVertex2f((float)(-size * Math.sin(Math.toRadians(60))), (float)((-size * Math.cos(Math.toRadians(60)))));
+		GL11.glVertex2f((float)(-size * Math.sin(Math.toRadians(60))), (float)(-size * Math.cos(Math.toRadians(60))));
 		
 		GL11.glEnd();
 		
