@@ -123,4 +123,11 @@ public class BotRegister {
 		selected.setX(x);
 		selected.setY(y);
 	}
+
+	public void updateScreenSize() {
+		for (Bot bot : botList) {
+			bot.updateScreenSize();
+		}
+		
+	}
 }

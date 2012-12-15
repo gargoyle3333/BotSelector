@@ -3,6 +3,7 @@ package net.sim.classes;
 import net.sim.interfaces.BotKeyboardListener;
 import net.sim.interfaces.BotMouseListener;
 
+import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
@@ -13,6 +14,7 @@ public class GameBoard {
 	
 	private BotMouseListener mMouseListener;
 	private BotKeyboardListener mKeyboardListener;
+//	private DisplayMode small, fullScreen;
 	
 	// Constants
 	private static final int FRAMES_PER_SECOND = 60;
@@ -21,13 +23,14 @@ public class GameBoard {
 	private boolean leftMouseDown, rightMouseDown;
 	private int x,y, currentX, currentY;
 	
-	public GameBoard(BotMouseListener mouseListener, BotKeyboardListener keyboardListener) {
-		try {
-			Display.setDisplayModeAndFullscreen(new DisplayMode(800,600));
-			Display.create();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+	public GameBoard(BotMouseListener mouseListener, BotKeyboardListener keyboardListener) throws LWJGLException {
+		
+//		small = new DisplayMode(800, 600);
+//		fullScreen = new DisplayMode(1280,1024);
+		
+		Display.setDisplayModeAndFullscreen(Display.getDesktopDisplayMode());
+		Display.create();
+		
 		GL11.glMatrixMode(GL11.GL_PROJECTION);
 		GL11.glLoadIdentity();
 		GL11.glOrtho(0, 800, 0, 600, 1, -1);
@@ -37,6 +40,15 @@ public class GameBoard {
 		mKeyboardListener = keyboardListener;
 	}
 	
+//	public void setFullScreen() throws LWJGLException {
+//		Display.setDisplayMode(fullScreen);
+//		Display.setFullscreen(true);
+//	}
+//
+//	public void setSmall() throws LWJGLException {
+//		Display.setDisplayMode(small);
+//		Display.setFullscreen(false);
+//	}
 	
 	public void update() {
 		pollMouse();
