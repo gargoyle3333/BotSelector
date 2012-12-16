@@ -36,6 +36,12 @@ public class GameBoard {
 		
 		Display.setDisplayMode(new DisplayMode(800,600));
 		Display.setResizable(true);
+		//Display.setDisplayModeAndFullscreen(Display.getDesktopDisplayMode());
+		
+		final double maxHeight = 300;
+		final double depth = 800;
+		final double scale = (depth - maxHeight) / depth;
+		
 		Display.create();
 		
 		currentScreenWidth = Display.getWidth();

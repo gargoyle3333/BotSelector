@@ -20,7 +20,7 @@ import org.lwjgl.opengl.GL11;
  */
 public class BotController implements BotMouseListener, BotKeyboardListener, BotWindowListener {
 
-	private static final int INITIAL_BOT_POPULATION = 30;
+	private static final int INITIAL_BOT_POPULATION = 20;
 	
 	private Random mRandom;
 	private int xMax, yMax, thetaMax, sizeMax, sizeMin;
@@ -41,7 +41,11 @@ public class BotController implements BotMouseListener, BotKeyboardListener, Bot
 
 		mBotRegister = new BotRegister();
 		for (int i = 0; i < INITIAL_BOT_POPULATION; i++) {
-			new Bot(this, mRandom.nextInt(xMax), mRandom.nextInt(yMax), Math.toRadians(mRandom.nextInt(thetaMax) - (thetaMax/2 -1)), mRandom.nextInt(sizeMax - sizeMin) + sizeMin + 1);
+			new Bot(this,
+					mRandom.nextInt(xMax),
+					mRandom.nextInt(yMax),
+					Math.toRadians(mRandom.nextInt(thetaMax) - (thetaMax/2 -1)),
+					mRandom.nextInt(sizeMax - sizeMin) + sizeMin + 1);
 		}
 	}
 	
