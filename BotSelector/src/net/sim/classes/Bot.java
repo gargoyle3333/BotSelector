@@ -5,6 +5,7 @@ import java.util.Random;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.Color;
+import org.lwjgl.util.vector.Vector3f;
 
 public class Bot {
 
@@ -35,6 +36,18 @@ public class Bot {
 		hue = mRandom.nextFloat();
 		color = new Color();
 		color.fromHSB(hue, 0.9f, 0.9f);
+	}
+	
+	public void consume(Bot that) {
+		int totalSize = this.size + that.size;
+		float t = this.size / (float) totalSize;
+		//interpolate colors
+		this.color = new Color(
+				(int) (this.color.getRed() * t + that.color.getRed() * (1 - t)),
+				(int) (this.color.getGreen() * t + that.color.getGreen() * (1 - t)),
+				(int) (this.color.getBlue() * t + that.color.getBlue() * (1 - t))
+		);
+		this.size = totalSize;
 	}
 
 	public void update() {
@@ -101,25 +114,19 @@ public class Bot {
 		// }
 		// New cloning method, 1 in 100 chance of duplicating
 		if (mRandom.nextInt(20) == 1 && size >= 10 && !selected) {
-			int newX = (int) (x + 2 * (mRandom.nextInt(2 * size) - size));
-			int newY = (int) (y + 2 * (mRandom.nextInt(2 * size) - size));
-			int newTheta = (int) Math.toDegrees(-theta
-					+ Math.toRadians(mRandom.nextInt(180) - 89));
-			new Bot(mBotController, newX, newY, newTheta, size / 2);
-			size = size / 2;
+			_clone();
 		}
 	}
-
-	public void draw() {
-		GL11.glMaterial(GL11.GL_FRONT_AND_BACK, GL11.GL_DIFFUSE, Utils.fBuffer4(color));
-		GL11.glMaterial(GL11.GL_FRONT_AND_BACK, GL11.GL_AMBIENT, Utils.fBuffer4(color));
-
-		GL11.glPushMatrix();
-		GL11.glTranslated(x, y, 0);
-		GL11.glRotated(Math.toDegrees(theta), 0, 0, -1);
-		GL11.glRotated(Math.toDegrees(theta), 0, 1, 0);
-
-		GL11.glBegin(GL11.GL_TRIANGLES);
+	
+	private void _clone() {
+		int newX = (int) (x + 2 * (mRandom.nextInt(2 * size) - size));
+		int newY = (int) (y + 2 * (mRandom.nextInt(2 * size) - size));
+		double newTheta = -theta + Math.toRadians(mRandom.nextInt(180) - 89);
+		new Bot(mBotController, newX, newY, newTheta, size / 2);
+		size = size / 2;
+	}
+	
+	private void drawTetrahedron() {
 		// https://en.wikipedia.org/wiki/Tetrahedron
 		final double R_CIRCUM = Math.sqrt(3 / 8d) * size;
 		final double R_FACE = Math.sqrt(3 / 4d) * size;
@@ -129,7 +136,8 @@ public class Bot {
 		final double[] left = { -size / 2, -R_CIRCUM / 3, -R_FACE / 2 };
 		final double[] right = { size / 2, -R_CIRCUM / 3, -R_FACE / 2 };
 
-
+		GL11.glBegin(GL11.GL_TRIANGLES);
+		
 		GL11.glNormal3d(-right[0], -right[1], -right[2]);
 		GL11.glVertex3d(front[0], front[1], front[2]);
 		GL11.glVertex3d(top[0], top[1], top[2]);
@@ -149,9 +157,61 @@ public class Bot {
 		GL11.glVertex3d(top[0], top[1], top[2]);
 		GL11.glVertex3d(left[0], left[1], left[2]);
 		GL11.glVertex3d(right[0], right[1], right[2]);
+		
+		GL11.glEnd();
+	}
+	
+	private void drawPyramid() {
+		final Vector3f front  = new Vector3f(    0,  size,     0);
 
+		GL11.glBegin(GL11.GL_TRIANGLES);
+		int n = getSideCount();
+		Vector3f last = new Vector3f(0, -size,  size);
+		for(int i = 1; i <= n; i++) {
+			double angle = Math.PI * 2 * i / n;
+			Vector3f next = new Vector3f(size * (float) Math.sin(angle), -size, size * (float) Math.cos(angle));
+
+			doNormal(Utils.normalTo(front, last, next));
+			doVector(front);
+			doVector(last);
+			doVector(next);
+			
+			last = next;
+		}
 		GL11.glEnd();
 
+		doNormal(new Vector3f(0, -1, 0));
+		GL11.glBegin(GL11.GL_QUADS);
+		for(int i = 1; i <= n; i++) {
+			double angle = Math.PI * 2 * i / n;
+			Vector3f v = new Vector3f(size * (float) Math.sin(angle), -size, size * (float) Math.cos(angle));
+			doVector(v);
+		}
+		GL11.glEnd();
+	}
+
+	private static void doNormal(Vector3f a) {
+		GL11.glNormal3d(a.getX(), a.getY(), a.getZ());
+	}
+	private static void doVector(Vector3f a) {
+		GL11.glVertex3d(a.getX(), a.getY(), a.getZ());
+	}
+	
+	public int getSideCount() {
+		return Math.max(3, size / 10);
+	}
+	
+	public void draw() {
+		GL11.glMaterial(GL11.GL_FRONT_AND_BACK, GL11.GL_DIFFUSE, Utils.fBuffer4(color));
+		GL11.glMaterial(GL11.GL_FRONT_AND_BACK, GL11.GL_AMBIENT, Utils.fBuffer4(color));
+
+		GL11.glPushMatrix();
+		GL11.glTranslated(x, y, 0);
+		GL11.glRotated(Math.toDegrees(theta), 0, 0, -1);
+		GL11.glRotated(Math.toDegrees(theta), 0, 1, 0);
+		
+		drawPyramid();
+		
 		GL11.glPopMatrix();
 	}
 
@@ -203,10 +263,6 @@ public class Bot {
 
 	public double getSize() {
 		return size;
-	}
-
-	public void increaseSize(double newSize) {
-		size += newSize;
 	}
 
 	public void setTheta(double _theta) {

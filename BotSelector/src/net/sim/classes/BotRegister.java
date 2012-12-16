@@ -43,10 +43,10 @@ public class BotRegister {
 				if (dx * dx + dy * dy < (sizeA + sizeB) * (sizeA + sizeB)) {
 					if (sizeA > sizeB) {
 						toRemove.add(b);
-						a.increaseSize(sizeB);
+						a.consume(b);
 					} else if (sizeA < sizeB) {
 						toRemove.add(a);
-						b.increaseSize(sizeA);
+						b.consume(a);
 					} else {
 						double angle1 = a.getTheta();
 						double angle2 = b.getTheta();
