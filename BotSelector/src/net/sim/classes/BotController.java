@@ -30,7 +30,7 @@ public class BotController implements BotMouseListener, BotKeyboardListener, Bot
 	private BotRegister mBotRegister;
 
 	public BotController() throws LWJGLException {
-		mGameBoard = new GameBoard(this, this, this);
+		mGameBoard = new GameBoard(this, this);
 		
 		mRandom = new Random();
 		xMax = Display.getWidth();
