@@ -4,6 +4,7 @@ import java.util.Random;
 
 import net.sim.interfaces.BotKeyboardListener;
 import net.sim.interfaces.BotMouseListener;
+import net.sim.interfaces.BotWindowListener;
 
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
@@ -17,24 +18,19 @@ import org.lwjgl.opengl.GL11;
  * @author mrh2
  * 
  */
-public class BotController implements BotMouseListener, BotKeyboardListener {
+public class BotController implements BotMouseListener, BotKeyboardListener, BotWindowListener {
 
-	private static final int INITIAL_BOT_POPULATION = 75;
+	private static final int INITIAL_BOT_POPULATION = 30;
 	
 	private Random mRandom;
 	private int xMax, yMax, thetaMax, sizeMax, sizeMin;
-	
-	// Keyboard variables
-	private boolean altHeld;
 	
 	//Variables for structured game programming
 	private GameBoard mGameBoard;
 	private BotRegister mBotRegister;
 
 	public BotController() throws LWJGLException {
-		mGameBoard = new GameBoard(this, this);
-		
-		altHeld = false;
+		mGameBoard = new GameBoard(this, this, this);
 		
 		mRandom = new Random();
 		xMax = Display.getWidth();
@@ -73,23 +69,6 @@ public class BotController implements BotMouseListener, BotKeyboardListener {
 		case Keyboard.KEY_LEFT:
 			mBotRegister.setSelectedRotatingAntiClockwise(true);
 			break;
-		case Keyboard.KEY_LMENU:
-			altHeld = true;
-			System.out.println("Alt pressed");
-			break;
-//		case Keyboard.KEY_F:
-//			System.out.println("F pressed and alt is held down: " + altHeld);
-//			if (altHeld)
-//				try {
-//					if (Display.isFullscreen()) mGameBoard.setSmall();
-//					else mGameBoard.setFullScreen();
-//					mBotRegister.updateScreenSize();
-//				} catch (Exception e) {
-//					e.printStackTrace();
-//					//Tired of eclipse moaning about exceptions.
-//				}
-//				
-//			break;
 //		default:
 //			System.out.printf("Key pressed: %s\n", Keyboard.getKeyName(key));
 		}
@@ -107,10 +86,6 @@ public class BotController implements BotMouseListener, BotKeyboardListener {
 			break;
 		case Keyboard.KEY_LEFT:
 			mBotRegister.setSelectedRotatingAntiClockwise(false);
-			break;
-		case Keyboard.KEY_LMENU:
-			System.out.println("Alt released");
-			altHeld = false;
 			break;
 		}
 //		System.out.printf("Key released: %s\n", Keyboard.getKeyName(key));
@@ -156,6 +131,11 @@ public class BotController implements BotMouseListener, BotKeyboardListener {
 	public static void main(String[] args) throws LWJGLException {
 		BotController botController = new BotController();
 		botController.start();
+	}
+
+	@Override
+	public void windowResized(int width, int height) {
+		mBotRegister.updateScreenSize();
 	}
 
 }

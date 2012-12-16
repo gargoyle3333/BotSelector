@@ -2,6 +2,7 @@ package net.sim.classes;
 
 import net.sim.interfaces.BotKeyboardListener;
 import net.sim.interfaces.BotMouseListener;
+import net.sim.interfaces.BotWindowListener;
 
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
@@ -12,9 +13,10 @@ import org.lwjgl.opengl.GL11;
 
 public class GameBoard {
 	
+	// Listener fields
 	private BotMouseListener mMouseListener;
 	private BotKeyboardListener mKeyboardListener;
-//	private DisplayMode small, fullScreen;
+	private BotWindowListener mWindowListener;
 	
 	// Constants
 	private static final int FRAMES_PER_SECOND = 60;
@@ -23,13 +25,21 @@ public class GameBoard {
 	private boolean leftMouseDown, rightMouseDown;
 	private int x,y, currentX, currentY;
 	
-	public GameBoard(BotMouseListener mouseListener, BotKeyboardListener keyboardListener) throws LWJGLException {
+	// Fields for screen
+	private int currentScreenWidth, currentScreenHeight;
+//	private DisplayMode small, fullScreen;
+	
+	public GameBoard(BotMouseListener mouseListener, BotKeyboardListener keyboardListener, BotWindowListener windowListener) throws LWJGLException {
 		
 //		small = new DisplayMode(800, 600);
-//		fullScreen = new DisplayMode(1280,1024);
+//		fullScreen = Display.getDesktopDisplayMode();
 		
-		Display.setDisplayModeAndFullscreen(Display.getDesktopDisplayMode());
+		Display.setDisplayMode(new DisplayMode(800,600));
+		Display.setResizable(true);
 		Display.create();
+		
+		currentScreenWidth = Display.getWidth();
+		currentScreenHeight = Display.getHeight();
 		
 		GL11.glMatrixMode(GL11.GL_PROJECTION);
 		GL11.glLoadIdentity();
@@ -38,21 +48,33 @@ public class GameBoard {
 		
 		mMouseListener = mouseListener;
 		mKeyboardListener = keyboardListener;
+		mWindowListener = windowListener;
 	}
 	
 //	public void setFullScreen() throws LWJGLException {
+//		Display.destroy();
 //		Display.setDisplayMode(fullScreen);
+//		GL11.glMatrixMode(GL11.GL_PROJECTION);
+//		GL11.glOrtho(0, fullScreen.getWidth(), 0, fullScreen.getHeight(), 1, -1);
+//		GL11.glMatrixMode(GL11.GL_MODELVIEW);
+//		Display.create();
 //		Display.setFullscreen(true);
 //	}
 //
 //	public void setSmall() throws LWJGLException {
+//		Display.destroy();
 //		Display.setDisplayMode(small);
+//		GL11.glMatrixMode(GL11.GL_PROJECTION);
+//		GL11.glOrtho(0, 800, 0, 600, 1, -1);
+//		GL11.glMatrixMode(GL11.GL_MODELVIEW);
+//		Display.create();
 //		Display.setFullscreen(false);
 //	}
 	
 	public void update() {
 		pollMouse();
 		pollKeyboard();
+		pollScreen();
 		Display.update();
 		Display.sync(FRAMES_PER_SECOND);
 	}
@@ -83,7 +105,7 @@ public class GameBoard {
 		}
 	}
 
-	private boolean pollKeyboard() {
+	private void pollKeyboard() {
 		int key;
 		while (Keyboard.next()) {
 			key = Keyboard.getEventKey();
@@ -94,9 +116,24 @@ public class GameBoard {
 				mKeyboardListener.keyTyped(key);
 			}
 		}
-		return false;
 	}
-
+	
+	private void pollScreen() {
+		if (currentScreenWidth != Display.getWidth() || currentScreenHeight != Display.getHeight()) {
+			currentScreenWidth = Display.getWidth();
+			currentScreenHeight = Display.getHeight();
+			mWindowListener.windowResized(currentScreenWidth, currentScreenHeight);
+			
+			GL11.glViewport(0, 0, currentScreenWidth, currentScreenHeight);
+	        GL11.glMatrixMode(GL11.GL_PROJECTION);
+	        GL11.glLoadIdentity();
+//	        GL11.gluPerspective(45.0f, ((float) width / (float) height), 0.1f,
+//	                100.0f);
+	        GL11.glMatrixMode(GL11.GL_MODELVIEW);
+	        GL11.glLoadIdentity();
+			
+		}
+	}
 //	private String correctCase(String input, boolean capital) {
 //		if (capital)
 //			return input.toUpperCase();
