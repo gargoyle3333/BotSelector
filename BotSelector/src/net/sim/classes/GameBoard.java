@@ -9,6 +9,8 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.util.Color;
+import org.lwjgl.util.vector.Vector3f;
 
 public class GameBoard {
 	
@@ -28,13 +30,38 @@ public class GameBoard {
 //		small = new DisplayMode(800, 600);
 //		fullScreen = new DisplayMode(1280,1024);
 		
-		Display.setDisplayModeAndFullscreen(Display.getDesktopDisplayMode());
+		//Display.setDisplayModeAndFullscreen(Display.getDesktopDisplayMode());
+		
+		final double maxHeight = 300;
+		final double depth = 800;
+		final double scale = (depth - maxHeight) / depth;
+		
+
+		Display.setDisplayMode(new DisplayMode(800, 600));
 		Display.create();
 		
 		GL11.glMatrixMode(GL11.GL_PROJECTION);
 		GL11.glLoadIdentity();
-		GL11.glOrtho(0, 800, 0, 600, 1, -1);
+		GL11.glFrustum(scale * -400, scale * 400, scale * -300, scale * 300, depth - maxHeight, depth + maxHeight);
+		GL11.glTranslated(-400, -300, -depth);
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
+		GL11.glLoadIdentity();
+		
+		
+		GL11.glShadeModel(GL11.GL_SMOOTH); // Enables Smooth Shading
+		GL11.glClearDepth(1.0f); // Depth Buffer Setup
+		GL11.glEnable(GL11.GL_DEPTH_TEST); // Enables Depth Testing
+		GL11.glDepthFunc(GL11.GL_LEQUAL); // The Type Of Depth Test To Do
+		
+		//Allocate light buffer
+		GL11.glEnable(GL11.GL_LIGHTING);
+		GL11.glLight(GL11.GL_LIGHT0, GL11.GL_AMBIENT, Utils.fBuffer4(Color.GREY));
+		GL11.glLight(GL11.GL_LIGHT0, GL11.GL_DIFFUSE, Utils.fBuffer4(Color.WHITE));
+		GL11.glLight(GL11.GL_LIGHT0, GL11.GL_SPECULAR, Utils.fBuffer4(Color.BLACK));
+		GL11.glLight(GL11.GL_LIGHT0, GL11.GL_POSITION, Utils.fBuffer4(0, 0, 1, 0));
+		GL11.glEnable(GL11.GL_LIGHT0);
+		GL11.glEnable(GL11.GL_NORMALIZE);
+		
 		
 		mMouseListener = mouseListener;
 		mKeyboardListener = keyboardListener;
