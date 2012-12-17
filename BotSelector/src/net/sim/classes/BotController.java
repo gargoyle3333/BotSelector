@@ -20,14 +20,14 @@ import org.lwjgl.opengl.GL11;
  */
 public class BotController implements BotMouseListener, BotKeyboardListener, BotWindowListener {
 
-	private static final int INITIAL_BOT_POPULATION = 20;
+	private static final int INITIAL_BOT_POPULATION = 20, FOOD_SPECKS_AVAILABLE = 20;
 	
 	private Random mRandom;
 	private int xMax, yMax, thetaMax, sizeMax, sizeMin;
 	
 	//Variables for structured game programming
 	private GameBoard mGameBoard;
-	private BotRegister mBotRegister;
+	private SimRegister mSimRegister;
 
 	public BotController() throws LWJGLException {
 		mGameBoard = new GameBoard(this, this);
@@ -39,7 +39,7 @@ public class BotController implements BotMouseListener, BotKeyboardListener, Bot
 		sizeMax = 20;
 		sizeMin = 5;
 
-		mBotRegister = new BotRegister();
+		mSimRegister = new SimRegister();
 		for (int i = 0; i < INITIAL_BOT_POPULATION; i++) {
 			new Bot(this,
 					mRandom.nextInt(xMax),
@@ -47,31 +47,41 @@ public class BotController implements BotMouseListener, BotKeyboardListener, Bot
 					Math.toRadians(mRandom.nextInt(thetaMax) - (thetaMax/2 -1)),
 					mRandom.nextInt(sizeMax - sizeMin) + sizeMin + 1);
 		}
+		for (int i = 0; i < FOOD_SPECKS_AVAILABLE; i++) {
+			new FoodSpeck(this,
+					mRandom.nextInt(xMax),
+					mRandom.nextInt(yMax),
+					Math.toRadians(mRandom.nextInt(thetaMax) - (thetaMax/2 -1)));
+		}
 	}
 	
 	public void start(){
 		while (!Display.isCloseRequested()) {
 			GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
-			mBotRegister.update();
+			mSimRegister.update();
 			mGameBoard.update();
 		}
 	}
 
 	public void register(Bot bot) {
-		mBotRegister.registerBot(bot);
+		mSimRegister.registerBot(bot);
+	}
+	
+	public void register(FoodSpeck speck) {
+		mSimRegister.registerSpeck(speck);
 	}
 
 	@Override
 	public void keyPressed(int key) {
 		switch (key) {
 		case Keyboard.KEY_UP:
-			mBotRegister.setSelectedMovingForward(true);
+			mSimRegister.setSelectedMovingForward(true);
 			break;
 		case Keyboard.KEY_RIGHT:
-			mBotRegister.setSelectedRotatingClockwise(true);
+			mSimRegister.setSelectedRotatingClockwise(true);
 			break;
 		case Keyboard.KEY_LEFT:
-			mBotRegister.setSelectedRotatingAntiClockwise(true);
+			mSimRegister.setSelectedRotatingAntiClockwise(true);
 			break;
 //		default:
 //			System.out.printf("Key pressed: %s\n", Keyboard.getKeyName(key));
@@ -83,13 +93,13 @@ public class BotController implements BotMouseListener, BotKeyboardListener, Bot
 	public void keyReleased(int key) {
 		switch (key) {
 		case Keyboard.KEY_UP:
-			mBotRegister.setSelectedMovingForward(false);
+			mSimRegister.setSelectedMovingForward(false);
 			break;
 		case Keyboard.KEY_RIGHT:
-			mBotRegister.setSelectedRotatingClockwise(false);
+			mSimRegister.setSelectedRotatingClockwise(false);
 			break;
 		case Keyboard.KEY_LEFT:
-			mBotRegister.setSelectedRotatingAntiClockwise(false);
+			mSimRegister.setSelectedRotatingAntiClockwise(false);
 			break;
 		}
 //		System.out.printf("Key released: %s\n", Keyboard.getKeyName(key));
@@ -102,13 +112,13 @@ public class BotController implements BotMouseListener, BotKeyboardListener, Bot
 
 	@Override
 	public void leftButtonClicked(int x, int y) {
-		mBotRegister.pickupBotNearest(x,y);
+		mSimRegister.pickupBotNearest(x,y);
 //		System.out.printf("Left mouse button clicked at (%d,%d)\n", x,y);
 	}
 
 	@Override
 	public void leftButtonReleased(int x, int y) {
-		mBotRegister.release();
+		mSimRegister.release();
 	}
 
 	@Override
@@ -124,7 +134,7 @@ public class BotController implements BotMouseListener, BotKeyboardListener, Bot
 
 	@Override
 	public void leftDragged(int x, int y) {
-		mBotRegister.dragSelected(x,y);
+		mSimRegister.dragSelected(x,y);
 	}
 
 	@Override
@@ -139,7 +149,7 @@ public class BotController implements BotMouseListener, BotKeyboardListener, Bot
 
 	@Override
 	public void windowResized(int width, int height) {
-		mBotRegister.updateScreenSize();
+		mSimRegister.updateScreenSize();
 	}
 
 }

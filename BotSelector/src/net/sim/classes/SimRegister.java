@@ -8,16 +8,21 @@ import java.util.ArrayList;
  * @author mrh2
  * 
  */
-public class BotRegister {
+public class SimRegister {
 
-	private ArrayList<Bot> botList, toAdd, toRemove;
+	private ArrayList<Bot> botList, botsToAdd, botsToRemove;
+	private ArrayList<FoodSpeck> speckList, specksToAdd, specksToRemove;
+	
 	private Bot selected;
 
-	public BotRegister() {
+	public SimRegister() {
 		botList = new ArrayList<Bot>();
-		toAdd = new ArrayList<Bot>();
-		toRemove = new ArrayList<Bot>();
+		botsToAdd = new ArrayList<Bot>();
+		botsToRemove = new ArrayList<Bot>();
 		selected = null;
+		speckList = new ArrayList<FoodSpeck>();
+		specksToAdd = new ArrayList<FoodSpeck>();
+		specksToRemove = new ArrayList<FoodSpeck>();
 	}
 
 	/**
@@ -27,13 +32,29 @@ public class BotRegister {
 	 * @param newBot
 	 */
 	public void registerBot(Bot newBot) {
-		toAdd.add(newBot);
+		botsToAdd.add(newBot);
 	}
 
 	public void update() {
-		if (toAdd.size() > 0) {
-			botList.addAll(toAdd);
-			toAdd.clear();
+		updateBots();
+		updateFood();
+	}
+	
+	private void updateFood() {
+		speckList.removeAll(specksToRemove);
+		specksToRemove.clear();
+		speckList.addAll(specksToAdd);
+		specksToAdd.clear();
+		for (FoodSpeck speck : speckList) {
+			speck.update();
+			speck.draw();
+		}
+	}
+
+	private void updateBots() {
+		if (botsToAdd.size() > 0) {
+			botList.addAll(botsToAdd);
+			botsToAdd.clear();
 		}
 		for (int i = 0; i < botList.size() - 1; i++) {
 			for (int j = i + 1; j < botList.size(); j++) {
@@ -42,10 +63,10 @@ public class BotRegister {
 				double sizeA = a.getSize(), sizeB = b.getSize();
 				if (dx * dx + dy * dy < (sizeA + sizeB) * (sizeA + sizeB)) {
 					if (sizeA > sizeB) {
-						toRemove.add(b);
+						botsToRemove.add(b);
 						a.consume(b);
 					} else if (sizeA < sizeB) {
-						toRemove.add(a);
+						botsToRemove.add(a);
 						b.consume(a);
 					} else {
 						double angle1 = a.getTheta();
@@ -61,8 +82,8 @@ public class BotRegister {
 			}
 		}
 
-		botList.removeAll(toRemove);
-		toRemove.clear();
+		botList.removeAll(botsToRemove);
+		botsToRemove.clear();
 
 		for (Bot bot : botList) {
 			bot.update();
@@ -129,5 +150,9 @@ public class BotRegister {
 			bot.updateScreenSize();
 		}
 		
+	}
+
+	public void registerSpeck(FoodSpeck speck) {
+		specksToAdd.add(speck);
 	}
 }

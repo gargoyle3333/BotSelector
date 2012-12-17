@@ -9,7 +9,7 @@ import org.lwjgl.util.vector.Vector3f;
 
 public class Bot {
 
-	private static final float MAX_SPEED = 3.0F, MAX_ROTATION = 0.05F;
+	private static final float MAX_SPEED = 3.0F, MAX_ROTATION = 0.05F, MAX_ACCELERATION = 0.4F;
 
 	private int screenWidth, screenHeight;
 
