@@ -9,7 +9,7 @@ public class GlobalEventHandler {
 	
 	protected GlobalEventHandler() {}
 	
-	public static void init() {
+	static {
 		handlerArrays = new HashMap<Integer, ArrayList<IEventHandler>>();
 		
 		for (Event e : Event.values()) {
