@@ -5,6 +5,10 @@ public enum Event {
 	// Define all events here.
 	
 	UPDATE_ENTITIES,
-	DRAW_ENTITIES
+	DRAW_ENTITIES,
+	
+	ENTITY_BOT_CREATED,
+	
+	ENTITY_FOOD_SPECK_DESTROYED
 
 }
