@@ -1,44 +1,140 @@
 package net.mike.bot;
 
-import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import net.mike.bot.entities.Entity;
 import net.mike.bot.entities.EntityBot;
+import net.mike.bot.entities.EntityFoodSpeck;
 import net.mike.bot.event.Event;
 import net.mike.bot.event.GlobalEventHandler;
 import net.mike.bot.event.IEventHandler;
 
+import org.lwjgl.util.vector.Vector2f;
+
 public class SimController implements IEventHandler {
 	
-	private static final int INITIAL_BOTS = 20;
+	private SimRegister mRegister;
 	
-	private ArrayList<EntityBot> botEntityList;
-
 	public SimController() {
 		GlobalEventHandler.subscribeEvent(this, Event.UPDATE_ENTITIES);
 		GlobalEventHandler.subscribeEvent(this, Event.DRAW_ENTITIES);
 		
-		botEntityList = new ArrayList<EntityBot>();
-		for (int i = 0; i < INITIAL_BOTS; i++) {
-			botEntityList.add(new EntityBot());
-		}
+		mRegister = new SimRegister();
 		
 	}
 	
 	private void updateEntities() {
-		Iterator<EntityBot> botEntityIterator = botEntityList.iterator();
-		while (botEntityIterator.hasNext()) {
-			// Update
-			botEntityIterator.next().update();
+		
+		// Check for age in food specks
+		Iterator<EntityFoodSpeck> foodEntityIterator = mRegister.getFoodEntityList().iterator();
+		while (foodEntityIterator.hasNext()) {
+			foodEntityIterator.next().update();
 		}
+		
+		List<EntityBot> bots = mRegister.getBotEntityList();
+		// Update
+		for (EntityBot bot : bots) {
+			bot.update();
+		}
+		
+		// Sort out collisions
+		for (int i = 0; i < bots.size(); i++) {
+			EntityBot bot = bots.get(i);
+			for (int j = i + 1; j < bots.size(); j++) {
+				collideOrConsume(bot, bots.get(j));
+			}
+			for (EntityFoodSpeck speck : mRegister.getFoodEntityList()) {
+				// Check for collision here
+				collideOrConsume(bot, speck);
+			}
+		}
+		
+		// Remove dead specks
+		int specksDestroyed = 0;
+		foodEntityIterator = mRegister.getFoodEntityList().iterator();
+		while (foodEntityIterator.hasNext()) {
+			Entity entity = foodEntityIterator.next();
+			if(!entity.isAlive()) {
+				foodEntityIterator.remove();
+				specksDestroyed++;
+			}
+		}
+		
+		for (int i = 0; i < specksDestroyed; i++) {
+			GlobalEventHandler.fireEvent(Event.ENTITY_FOOD_SPECK_DESTROYED, null);
+		}
+		
+		// Remove dead bots
+		Iterator<EntityBot> botIterator = bots.iterator();
+		while (botIterator.hasNext()) {
+			if (!botIterator.next().isAlive()) {
+				botIterator.remove();
+			}
+		}
+		
 	}
 	
+	private void collideOrConsume(EntityBot bot, Entity entity) {
+		Vector2f compare = new Vector2f();
+		Vector2f.sub(bot.getPosition(), entity.getPosition(), compare);
+		if (compare.length() <= bot.getSize() + entity.getSize()) {
+			// Collision!!
+			if (bot.getSize() == entity.getSize()) {
+				// Same size, so bounce off
+				// TODO bounce off :)
+				Vector2f newBot = new Vector2f();
+				Vector2f newEntity = new Vector2f();
+				float massA = 1, massB = 1; // TODO implement masses
+				
+				Vector2f velA = new Vector2f(bot.getVelocity().x, bot.getVelocity().y);
+				Vector2f velB = new Vector2f(entity.getVelocity().x, entity.getVelocity().y);
+				
+				velA.scale((float)((massA - massB)/(massA+massB)));
+				velB.scale((float)((massB * 2)/(massA+massB)));
+				Vector2f.add(velA, velB, newBot);
+				
+				velA = new Vector2f(bot.getVelocity().x, bot.getVelocity().y);
+				velB = new Vector2f(entity.getVelocity().x, entity.getVelocity().y);
+				
+				velB.scale((float)((massB - massA)/(massA+massB)));
+				velA.scale((float)((massA * 2)/(massA+massB)));
+				Vector2f.add(velA, velB, newEntity);
+				
+				bot.setVelocity(newBot);
+				entity.setVelocity(newEntity);
+				
+			} else if (bot.getSize() < entity.getSize()) {
+				// TODO bounce off
+				
+				if (entity instanceof EntityBot) {
+					((EntityBot)entity).consume(bot);
+				} else {
+					if (compare.x < entity.getSize()) {
+						// Left or right face
+						bot.getVelocity().x *= -1;
+					} else {
+						bot.getVelocity().y *= -1;
+					}
+				}
+				
+			} else {
+				// TODO consume
+				bot.consume(entity);
+			}
+		}
+	}
+
 	private void drawEntities() {
-		Iterator<EntityBot> botEntityIterator = botEntityList.iterator();
+		Iterator<EntityBot> botEntityIterator = mRegister.getBotEntityList().iterator();
 		while (botEntityIterator.hasNext()) {
-			// Update
+			// Draw
 			botEntityIterator.next().draw();
+		}
+		
+		Iterator<EntityFoodSpeck> foodEntityIterator = mRegister.getFoodEntityList().iterator();
+		while (foodEntityIterator.hasNext()) {
+			foodEntityIterator.next().draw();
 		}
 	}
 	
