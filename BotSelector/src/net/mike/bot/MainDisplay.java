@@ -7,6 +7,7 @@ import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.util.vector.Vector2f;
 
 public class MainDisplay {
 	
@@ -45,22 +46,16 @@ public class MainDisplay {
 		
 		while (!Display.isCloseRequested()) {
 			
-			GL11.glClearColor(0.2F, 0.2F, 0.2F, 0F);
 			GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
-			
-			GL11.glBegin(GL11.GL_TRIANGLES);
-			GL11.glColor3f(1F, 0F, 0F);
-			GL11.glVertex2i(-5, 5);
-			GL11.glVertex2i(-5, 10);
-			GL11.glVertex2i(-10, 5);
-			GL11.glEnd();
+			GL11.glClearColor(0.2F, 0.2F, 0.2F, 0F);
 			
 			// Update
 			GlobalEventHandler.fireEvent(Event.UPDATE_ENTITIES, null);
 			// Redraw
 			GlobalEventHandler.fireEvent(Event.DRAW_ENTITIES, null);
+			
 			Display.update();
-			Display.sync(FRAMES_PER_SECOND);
+			Display.sync(FRAMES_PER_SECOND); 
 		}
 		
 		// Cleanup
