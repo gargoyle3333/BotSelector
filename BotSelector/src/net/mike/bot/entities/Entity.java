@@ -5,8 +5,6 @@ import org.lwjgl.util.vector.Vector2f;
 
 public abstract class Entity {
 	
-	public static final Vector2f ZERO_VECTOR = new Vector2f(0, 0);
-	
 	protected State mState;
 	protected Color mColor;
 	protected Vector2f mPosition, mVelocity;
