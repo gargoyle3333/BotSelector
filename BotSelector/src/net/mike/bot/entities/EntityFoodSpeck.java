@@ -24,6 +24,7 @@ public class EntityFoodSpeck extends Entity {
 		mFramesBeforeDeath = r.nextInt(MAX_FRAMES_ALIVE - MIN_FRAMES_ALIVE) + MIN_FRAMES_ALIVE;
 		mPosition = new Vector2f(r.nextFloat(), r.nextFloat());
 		mVelocity = new Vector2f(0,0); 
+		mFoodLevel = 0.01F;
 	}
 	
 	@Override

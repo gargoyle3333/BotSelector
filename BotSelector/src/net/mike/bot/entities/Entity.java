@@ -8,8 +8,8 @@ public abstract class Entity {
 	protected State mState;
 	protected Color mColor;
 	protected Vector2f mPosition, mVelocity;
-	protected int mFramesAlive;
-	protected float mSize;
+	protected int mFramesAlive = 0;
+	protected float mSize, mFoodLevel;
 	
 	public Vector2f getPosition() {
 		return mPosition;
@@ -33,6 +33,10 @@ public abstract class Entity {
 
 	public void setSize(float size) {
 		this.mSize = size;
+	}
+	
+	public float getFoodLevel() {
+		return mFoodLevel;
 	}
 	
 	

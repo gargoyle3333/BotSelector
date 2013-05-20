@@ -9,9 +9,12 @@ import org.lwjgl.util.vector.Vector2f;
 
 public class EntityBot extends Entity {
 	
-	private static final int MAX_SPEED_MULTIPLIED = 7;
-	private static final int MIN_SPEED_MULTIPLIED = 2;
+	private static final int MAX_SPEED = 7;
+	private static final int MIN_SPEED = 2;
 	private static final float SPEED_MULTIPLIER = 1000F; // = 0.007 max, 0.002 min
+	
+	private static final int FRAMES_BEFORE_FOOD_DECREMENT = 60;
+	private static final float FOOD_DECREMENT = 0.1F;
 	
 	public EntityBot() {
 		super();
@@ -20,13 +23,14 @@ public class EntityBot extends Entity {
 		mPosition = new Vector2f(r.nextFloat(), r.nextFloat());
 		
 		// Any neater way to do this?
-		float xVel = (float) ((r.nextInt(MAX_SPEED_MULTIPLIED-MIN_SPEED_MULTIPLIED) + MIN_SPEED_MULTIPLIED)/SPEED_MULTIPLIER);
-		float yVel = (float) ((r.nextInt(MAX_SPEED_MULTIPLIED-MIN_SPEED_MULTIPLIED) + MIN_SPEED_MULTIPLIED)/SPEED_MULTIPLIER);
+		float xVel = (float) ((r.nextInt(MAX_SPEED-MIN_SPEED) + MIN_SPEED)/SPEED_MULTIPLIER);
+		float yVel = (float) ((r.nextInt(MAX_SPEED-MIN_SPEED) + MIN_SPEED)/SPEED_MULTIPLIER);
 		if (r.nextInt(10) % 2 == 0) xVel *= -1;
 		if (r.nextInt(10) % 2 == 0) yVel *= -1;
 		
+		mFoodLevel = r.nextFloat();
 		mVelocity = new Vector2f(xVel, yVel);
-		mSize = 0.015F;
+		mSize = foodToSize(mFoodLevel);
 	}
 	
 	public EntityBot(Color color, Vector2f position, Vector2f velocity) {
@@ -45,6 +49,13 @@ public class EntityBot extends Entity {
 		if (mPosition.y < 0 || mPosition.y > 1) {
 			mVelocity.y *= -1;
 		}
+		if (++mFramesAlive % FRAMES_BEFORE_FOOD_DECREMENT == 0) {
+			mFoodLevel -= FOOD_DECREMENT;
+		}
+		if (mFoodLevel < 0) {
+			mState = State.STARVED;
+		}
+		mSize = foodToSize(mFoodLevel);
 	}
 
 	@Override
@@ -76,11 +87,15 @@ public class EntityBot extends Entity {
 	}
 	
 	public void consume(Entity food) {
-		// TODO add to food level
 		if (food.getState() != State.CONSUMED) {
 			food.setState(State.CONSUMED);
+			Vector2f.add(mVelocity, food.getVelocity(), mVelocity);
+			mFoodLevel += food.getFoodLevel();
 		}
-		Vector2f.add(mVelocity, food.getVelocity(), mVelocity);
+	}
+	
+	private float foodToSize(float food) {
+		return (float) (0.01 + food * 0.025);
 	}
 	
 }
