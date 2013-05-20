@@ -26,7 +26,7 @@ public class EntityBot extends Entity {
 		if (r.nextInt(10) % 2 == 0) yVel *= -1;
 		
 		mVelocity = new Vector2f(xVel, yVel);
-		mSize = 10;
+		mSize = 0.015F;
 	}
 	
 	public EntityBot(Color color, Vector2f position, Vector2f velocity) {
@@ -51,7 +51,6 @@ public class EntityBot extends Entity {
 	public void draw() {
 		GL11.glPushMatrix();
 		
-		// TODO neaten this up!
 		double angle = 0;
 		if (mVelocity.x == 0) {
 			angle = mVelocity.y < 0 ? 180 : 0;
@@ -63,6 +62,7 @@ public class EntityBot extends Entity {
 		
 		GL11.glTranslatef(mPosition.x * Display.getWidth(), mPosition.y * Display.getHeight(), 0);
 		GL11.glRotated(angle, 0D, 0D, -1D);
+		GL11.glScaled((float)Display.getWidth(), (float)Display.getHeight(), 0);
 		
 		GL11.glBegin(GL11.GL_TRIANGLES);
 		GL11.glColor3f(mColor.getRed()/256F, mColor.getGreen()/256F, mColor.getBlue()/256F);
@@ -73,6 +73,14 @@ public class EntityBot extends Entity {
 		
 		GL11.glPopMatrix();
 		
+	}
+	
+	public void consume(Entity food) {
+		// TODO add to food level
+		if (food.getState() != State.CONSUMED) {
+			food.setState(State.CONSUMED);
+		}
+		Vector2f.add(mVelocity, food.getVelocity(), mVelocity);
 	}
 	
 }
