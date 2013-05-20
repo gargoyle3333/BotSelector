@@ -1,0 +1,13 @@
+TODO:
+
+Create a food level in bots
+Make size depend upon food level
+
+Get bots colliding:
+	-	Bounce if the same size
+	-	Consume if different size
+
+Get bots cloning:
+	-	If food is over a certain level, there's a random change of cloning
+	
+Get food specks generating and being eaten.
