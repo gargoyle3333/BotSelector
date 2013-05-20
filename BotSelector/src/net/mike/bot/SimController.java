@@ -13,7 +13,6 @@ public class SimController implements IEventHandler {
 	
 	private static final int INITIAL_BOTS = 20;
 	
-	// How will we register the bots?
 	private ArrayList<EntityBot> botEntityList;
 
 	public SimController() {
@@ -31,8 +30,7 @@ public class SimController implements IEventHandler {
 		Iterator<EntityBot> botEntityIterator = botEntityList.iterator();
 		while (botEntityIterator.hasNext()) {
 			// Update
-			Entity bot = botEntityIterator.next();
-			bot.update();
+			botEntityIterator.next().update();
 		}
 	}
 	
@@ -40,8 +38,7 @@ public class SimController implements IEventHandler {
 		Iterator<EntityBot> botEntityIterator = botEntityList.iterator();
 		while (botEntityIterator.hasNext()) {
 			// Update
-			Entity bot = botEntityIterator.next();
-			bot.draw();
+			botEntityIterator.next().draw();
 		}
 	}
 	
