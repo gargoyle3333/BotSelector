@@ -9,16 +9,24 @@ import org.lwjgl.util.vector.Vector2f;
 
 public class EntityBot extends Entity {
 	
+	private static final int MAX_SPEED_MULTIPLIED = 7;
+	private static final int MIN_SPEED_MULTIPLIED = 2;
+	private static final float SPEED_MULTIPLIER = 1000F; // = 0.007 max, 0.002 min
+	
 	public EntityBot() {
 		super();
 		Random r = new Random();
 		mColor = new Color(r.nextInt(256), r.nextInt(256), r.nextInt(256));
 		mPosition = new Vector2f(r.nextFloat(), r.nextFloat());
-		// We should make sure that we have a velocity greater than 0.05 either way
-		// and less than 0.1
-		float xVel = (float) ((r.nextInt(6) + 5)/100.0);
-		float yVel = (float) ((r.nextInt(6) + 5)/100.0);
+		
+		// Any neater way to do this?
+		float xVel = (float) ((r.nextInt(MAX_SPEED_MULTIPLIED-MIN_SPEED_MULTIPLIED) + MIN_SPEED_MULTIPLIED)/SPEED_MULTIPLIER);
+		float yVel = (float) ((r.nextInt(MAX_SPEED_MULTIPLIED-MIN_SPEED_MULTIPLIED) + MIN_SPEED_MULTIPLIED)/SPEED_MULTIPLIER);
+		if (r.nextInt(10) % 2 == 0) xVel *= -1;
+		if (r.nextInt(10) % 2 == 0) yVel *= -1;
+		
 		mVelocity = new Vector2f(xVel, yVel);
+		mSize = 10;
 	}
 	
 	public EntityBot(Color color, Vector2f position, Vector2f velocity) {
@@ -32,21 +40,29 @@ public class EntityBot extends Entity {
 	public void update() {
 		Vector2f.add(mPosition, mVelocity, mPosition);
 		if (mPosition.x < 0 || mPosition.x > 1) {
-			mVelocity.setX(-mVelocity.getX());
+			mVelocity.x *= -1;
 		}
-		if (mPosition.y < 0 || mPosition.x > 1) {
-			mVelocity.setY(-mVelocity.getY());
+		if (mPosition.y < 0 || mPosition.y > 1) {
+			mVelocity.y *= -1;
 		}
 	}
 
 	@Override
 	public void draw() {
-		
 		GL11.glPushMatrix();
 		
-		// Rotate around z-axis
-		GL11.glRotatef(Vector2f.angle(mVelocity, Entity.ZERO_VECTOR), 0, 0, 1F);
+		// TODO neaten this up!
+		double angle = 0;
+		if (mVelocity.x == 0) {
+			angle = mVelocity.y < 0 ? 180 : 0;
+		} else if (mVelocity.x > 0) {
+			angle = 90 - Math.toDegrees(Math.atan(mVelocity.y / mVelocity.x));
+		} else {
+			angle = -90 + Math.toDegrees(Math.atan(mVelocity.y / -mVelocity.x));
+		}
+		
 		GL11.glTranslatef(mPosition.x * Display.getWidth(), mPosition.y * Display.getHeight(), 0);
+		GL11.glRotated(angle, 0D, 0D, -1D);
 		
 		GL11.glBegin(GL11.GL_TRIANGLES);
 		GL11.glColor3f(mColor.getRed()/256F, mColor.getGreen()/256F, mColor.getBlue()/256F);
