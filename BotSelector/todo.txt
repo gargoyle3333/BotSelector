@@ -1,5 +1,5 @@
 TODO:
 
-Get bots cloning.
 Get bots accelerating and decelerating.
-Force predator bot to update momentum weighted by mass.
+Same colour bots should mate.
+Bots can hunt each other or food specks.
