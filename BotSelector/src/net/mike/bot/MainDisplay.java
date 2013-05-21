@@ -7,7 +7,6 @@ import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.util.vector.Vector2f;
 
 public class MainDisplay {
 	

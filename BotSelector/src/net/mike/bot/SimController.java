@@ -147,6 +147,9 @@ public class SimController implements IEventHandler {
 		case DRAW_ENTITIES:
 			drawEntities();
 			break;
+		default:
+			System.err.println("Unexpected event received in SimController: " + event);
+			break;
 		}
 		
 	}
