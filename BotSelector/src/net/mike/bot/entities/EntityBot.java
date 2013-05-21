@@ -1,5 +1,7 @@
 package net.mike.bot.entities;
 
+import net.mike.bot.event.Event;
+import net.mike.bot.event.GlobalEventHandler;
 import net.mike.bot.util.RandomUtil;
 
 import org.lwjgl.opengl.Display;
@@ -14,7 +16,7 @@ public class EntityBot extends Entity {
 	private static final float SPEED_MULTIPLIER = 1000F; // = 0.007 max, 0.002 min
 	
 	private static final int FRAMES_BEFORE_FOOD_DECREMENT = 60;
-	private static final float FOOD_DECREMENT = 0.1F;
+	private static final float FOOD_DECREMENT = 0.00001F;
 	
 	public EntityBot() {
 		super();
@@ -55,6 +57,10 @@ public class EntityBot extends Entity {
 		}
 		if (mFoodLevel < 0) {
 			mState = State.STARVED;
+		}
+		// If food level high enough, 1 in 4 chance of spawning
+		if (mFoodLevel >= 0.4 && RandomUtil.rand.nextInt(4) == 0) {
+			spawnClone(mColor, mPosition, mVelocity, mFoodLevel);
 		}
 		mSize = foodToSize(mFoodLevel);
 	}
@@ -104,6 +110,40 @@ public class EntityBot extends Entity {
 	private float foodToSize(float food) {
 		// y = mx + c
 		return (float) (0.01 + food * 0.025);
+	}
+	
+	private void spawnClone(Color color, Vector2f position, Vector2f velocity, float foodLevel) {
+		// New bots should be of food level 0.2
+		if (foodLevel <= 0.2) return;
+		mFoodLevel -= 0.2;
+		
+		/*
+		 * Algorithm:
+		 * Generate offspring vector 
+		 * 	0.5x to 2x original vector speed
+		 * 	-90<theta<90 rotation of original vector
+		 * Alter original velocity to conserve momentum
+		 * v1 = u1 + (m2/m1)(u1-v1)
+		 */
+		
+		// Generate theta: -PI/2 < THETA < PI/2
+		float theta = (float) (Math.PI/2.0 * (RandomUtil.rand.nextFloat() - 0.5));
+		float x = (float) (velocity.x * Math.cos(theta) - velocity.y * Math.sin(theta));
+		float y = (float) (velocity.x * Math.sin(theta) + velocity.y * Math.cos(theta));
+		
+		Vector2f newVelocity = new Vector2f(x, y);
+		
+		// 0.5x to 0.8x vector allowed
+		float scale = RandomUtil.rand.nextFloat() * 0.8F + 0.5F;
+		newVelocity.scale(scale);
+		
+		Vector2f copyOriginalVelocity = new Vector2f(velocity.x, velocity.y);
+		Vector2f.sub(copyOriginalVelocity, newVelocity, copyOriginalVelocity);
+		copyOriginalVelocity.scale((float) (0.2/foodToSize(mFoodLevel)));
+		Vector2f.add(copyOriginalVelocity, velocity, velocity);
+		
+		EntityBot offspring = new EntityBot(color, position, velocity, 0.2F);
+		GlobalEventHandler.fireEvent(Event.ENTITY_BOT_CREATED, offspring);
 	}
 	
 }

@@ -1,5 +1,6 @@
 package net.mike.bot;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -16,11 +17,14 @@ public class SimController implements IEventHandler {
 	
 	private SimRegister mRegister;
 	
+	private List<EntityBot> botsToAdd;
+	
 	public SimController() {
 		GlobalEventHandler.subscribeEvent(this, Event.UPDATE_ENTITIES);
 		GlobalEventHandler.subscribeEvent(this, Event.DRAW_ENTITIES);
 		
 		mRegister = new SimRegister();
+		botsToAdd = new ArrayList<EntityBot>();
 		
 	}
 	
@@ -72,6 +76,12 @@ public class SimController implements IEventHandler {
 				botIterator.remove();
 			}
 		}
+		
+		// Add new bots
+		for (EntityBot bot : botsToAdd) {
+			bots.add(bot);
+		}
+		botsToAdd.clear();
 		
 	}
 	
@@ -143,6 +153,9 @@ public class SimController implements IEventHandler {
 			break;
 		case DRAW_ENTITIES:
 			drawEntities();
+			break;
+		case ENTITY_BOT_CREATED:
+			botsToAdd.add((EntityBot) info);
 			break;
 		default:
 			System.err.println("Unexpected event received in SimController: " + event);
