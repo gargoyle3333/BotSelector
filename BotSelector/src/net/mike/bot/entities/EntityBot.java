@@ -16,7 +16,9 @@ public class EntityBot extends Entity {
 	private static final float SPEED_MULTIPLIER = 1000F; // = 0.007 max, 0.002 min
 	
 	private static final int FRAMES_BEFORE_FOOD_DECREMENT = 60;
-	private static final float FOOD_DECREMENT = 0.05F;
+	private static final float FOOD_DECREMENT = 0.005F;
+	
+	private static final float OFFSPRING_SIZE = 0.3F;
 	
 	public EntityBot() {
 		super();
@@ -116,9 +118,9 @@ public class EntityBot extends Entity {
 	}
 	
 	private void spawnClone(Color color, Vector2f position, Vector2f velocity, float foodLevel) {
-		// New bots should be of food level 0.2
-		if (foodLevel <= 0.2) return;
-		mFoodLevel -= 0.2;
+		// New bots should be of food level OFFSPRING_SIZE
+		if (foodLevel <= OFFSPRING_SIZE) return;
+		mFoodLevel -= OFFSPRING_SIZE;
 		
 		/*
 		 * Algorithm:
@@ -143,20 +145,25 @@ public class EntityBot extends Entity {
 		Vector2f momentum = new Vector2f(velocity.x, velocity.y);
 		momentum.scale(foodToSize(foodLevel));
 		
-		newVelocity.scale(0.2F);
+		newVelocity.scale(OFFSPRING_SIZE);
 		Vector2f newMomentum = new Vector2f();
 		Vector2f.sub(momentum, newVelocity, newMomentum);
 		// Undo scale from before 
 		newVelocity.scale(5F);
 		
-		newMomentum.scale((float) (1.0/(foodToSize(foodLevel)-0.2F)));
+		newMomentum.scale((float) (1.0/(foodToSize(foodLevel)-OFFSPRING_SIZE)));
 		mVelocity = newMomentum;
 		
-		// Shift the little babby out of the way of big mummy
-		Vector2f positionShift = new Vector2f((float)(1.05 * mSize * -newVelocity.x), (float) (1.05 * mSize * -newVelocity.y));
-		Vector2f.add(position, positionShift, position);
+		Vector2f newPosition = new Vector2f(position.x, position.y);
 		
-		EntityBot offspring = new EntityBot(color, position, newVelocity, 0.2F);
+		// Shift the little babby out of the way of big mummy by backtracking 60 frames of velocity
+		newVelocity.scale(60F);
+		Vector2f.sub(newPosition, newVelocity, newPosition);
+		newVelocity.scale((float) (1/60.0));
+		
+		Color newColor = new Color(color.getRed(), color.getGreen(), color.getBlue());
+		
+		EntityBot offspring = new EntityBot(newColor, newPosition, newVelocity, OFFSPRING_SIZE);
 		GlobalEventHandler.fireEvent(Event.ENTITY_BOT_CREATED, offspring);
 	}
 	
