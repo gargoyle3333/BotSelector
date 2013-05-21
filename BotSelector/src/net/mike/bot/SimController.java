@@ -105,8 +105,6 @@ public class SimController implements IEventHandler {
 				entity.setVelocity(newEntity);
 				
 			} else if (bot.getSize() < entity.getSize()) {
-				// TODO bounce off
-				
 				if (entity instanceof EntityBot) {
 					((EntityBot)entity).consume(bot);
 				} else {
@@ -119,7 +117,6 @@ public class SimController implements IEventHandler {
 				}
 				
 			} else {
-				// TODO consume
 				bot.consume(entity);
 			}
 		}

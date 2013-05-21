@@ -46,8 +46,9 @@ public class SimRegister implements IEventHandler {
 		switch (event) {
 		case ENTITY_FOOD_SPECK_DESTROYED:
 			mFoodEntityList.add(new EntityFoodSpeck());
+			break;
 		default:
-			System.err.println("Unexpected event receivedin SimRegister: " + event);
+			System.err.println("Unexpected event received in SimRegister: " + event);
 			break;
 		}
 	}

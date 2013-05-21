@@ -1,6 +1,6 @@
 package net.mike.bot.entities;
 
-import java.util.Random;
+import net.mike.bot.util.RandomUtil;
 
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
@@ -19,10 +19,9 @@ public class EntityFoodSpeck extends Entity {
 	
 	public EntityFoodSpeck() {
 		super();
-		Random r = new Random();
-		mSize = (r.nextInt(MAX_FOOD_SIZE - MIN_FOOD_SIZE) + MIN_FOOD_SIZE) / SIZE_MULTIPLIER;
-		mFramesBeforeDeath = r.nextInt(MAX_FRAMES_ALIVE - MIN_FRAMES_ALIVE) + MIN_FRAMES_ALIVE;
-		mPosition = new Vector2f(r.nextFloat(), r.nextFloat());
+		mSize = (RandomUtil.rand.nextInt(MAX_FOOD_SIZE - MIN_FOOD_SIZE) + MIN_FOOD_SIZE) / SIZE_MULTIPLIER;
+		mFramesBeforeDeath = RandomUtil.rand.nextInt(MAX_FRAMES_ALIVE - MIN_FRAMES_ALIVE) + MIN_FRAMES_ALIVE;
+		mPosition = new Vector2f(RandomUtil.rand.nextFloat(), RandomUtil.rand.nextFloat());
 		mVelocity = new Vector2f(0,0); 
 		mFoodLevel = 0.01F;
 	}

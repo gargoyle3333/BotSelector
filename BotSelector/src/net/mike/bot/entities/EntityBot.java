@@ -1,6 +1,6 @@
 package net.mike.bot.entities;
 
-import java.util.Random;
+import net.mike.bot.util.RandomUtil;
 
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
@@ -18,26 +18,27 @@ public class EntityBot extends Entity {
 	
 	public EntityBot() {
 		super();
-		Random r = new Random();
-		mColor = new Color(r.nextInt(256), r.nextInt(256), r.nextInt(256));
-		mPosition = new Vector2f(r.nextFloat(), r.nextFloat());
+		mColor = new Color(RandomUtil.rand.nextInt(256), RandomUtil.rand.nextInt(256), RandomUtil.rand.nextInt(256));
+		mPosition = new Vector2f(RandomUtil.rand.nextFloat(), RandomUtil.rand.nextFloat());
 		
 		// Any neater way to do this?
-		float xVel = (float) ((r.nextInt(MAX_SPEED-MIN_SPEED) + MIN_SPEED)/SPEED_MULTIPLIER);
-		float yVel = (float) ((r.nextInt(MAX_SPEED-MIN_SPEED) + MIN_SPEED)/SPEED_MULTIPLIER);
-		if (r.nextInt(10) % 2 == 0) xVel *= -1;
-		if (r.nextInt(10) % 2 == 0) yVel *= -1;
+		float xVel = (float) ((RandomUtil.rand.nextInt(MAX_SPEED-MIN_SPEED) + MIN_SPEED)/SPEED_MULTIPLIER);
+		float yVel = (float) ((RandomUtil.rand.nextInt(MAX_SPEED-MIN_SPEED) + MIN_SPEED)/SPEED_MULTIPLIER);
+		if (RandomUtil.rand.nextInt(10) % 2 == 0) xVel *= -1;
+		if (RandomUtil.rand.nextInt(10) % 2 == 0) yVel *= -1;
 		
-		mFoodLevel = r.nextFloat();
+		mFoodLevel = RandomUtil.rand.nextFloat();
 		mVelocity = new Vector2f(xVel, yVel);
 		mSize = foodToSize(mFoodLevel);
 	}
 	
-	public EntityBot(Color color, Vector2f position, Vector2f velocity) {
+	public EntityBot(Color color, Vector2f position, Vector2f velocity, float foodLevel) {
 		super();
 		mColor = color;
 		mPosition = position;
 		mVelocity = velocity;
+		mFoodLevel = foodLevel;
+		mSize = foodToSize(foodLevel);
 	}
 
 	@Override
@@ -88,13 +89,20 @@ public class EntityBot extends Entity {
 	
 	public void consume(Entity food) {
 		if (food.getState() != State.CONSUMED) {
-			food.setState(State.CONSUMED);
+			food.setState(State.CONSUMED); // Set food to eaten
+			mFoodLevel += food.getFoodLevel(); // Eat food
+			
+			// Update momentum using masses, instead of assuming same mass
+			mVelocity.scale(mSize);
+			food.getVelocity().scale(food.getSize());
 			Vector2f.add(mVelocity, food.getVelocity(), mVelocity);
-			mFoodLevel += food.getFoodLevel();
+			mVelocity.scale((float) (1.0/mSize));
+			
 		}
 	}
 	
 	private float foodToSize(float food) {
+		// y = mx + c
 		return (float) (0.01 + food * 0.025);
 	}
 	
