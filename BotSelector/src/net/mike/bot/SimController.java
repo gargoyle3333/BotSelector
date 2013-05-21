@@ -91,10 +91,8 @@ public class SimController implements IEventHandler {
 		Vector2f.sub(bot.getPosition(), entity.getPosition(), compare);
 		if (compare.length() <= bot.getSize() + entity.getSize()) {
 			// Collision!!
-			boolean checkColor = bot.getColor().equals(entity.getColor());
 			if (bot.getSize() == entity.getSize() || bot.getColor().equals(entity.getColor())) {
-				// Same size, so bounce off
-				// TODO bounce off :)
+				// Same size or same colour, so bounce off
 				Vector2f newBot = new Vector2f();
 				Vector2f newEntity = new Vector2f();
 				float massA = bot.getSize(), massB = entity.getSize();
