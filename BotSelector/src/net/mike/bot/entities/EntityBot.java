@@ -16,7 +16,7 @@ public class EntityBot extends Entity {
 	private static final float SPEED_MULTIPLIER = 1000F; // = 0.007 max, 0.002 min
 	
 	private static final int FRAMES_BEFORE_FOOD_DECREMENT = 60;
-	private static final float FOOD_DECREMENT = 0.00001F;
+	private static final float FOOD_DECREMENT = 0.05F;
 	
 	public EntityBot() {
 		super();
@@ -45,21 +45,24 @@ public class EntityBot extends Entity {
 
 	@Override
 	public void update() {
+		// New position
 		Vector2f.add(mPosition, mVelocity, mPosition);
+		// Bounce off walls
 		if (mPosition.x < 0 || mPosition.x > 1) {
 			mVelocity.x *= -1;
 		}
 		if (mPosition.y < 0 || mPosition.y > 1) {
 			mVelocity.y *= -1;
 		}
+		// Too old?
 		if (++mFramesAlive % FRAMES_BEFORE_FOOD_DECREMENT == 0) {
 			mFoodLevel -= FOOD_DECREMENT;
 		}
 		if (mFoodLevel < 0) {
 			mState = State.STARVED;
 		}
-		// If food level high enough, 1 in 4 chance of spawning
-		if (mFoodLevel >= 0.4 && RandomUtil.rand.nextInt(4) == 0) {
+		// If food level high enough, 1 in 120 chance of spawning
+		if (mFoodLevel >= 0.4 && RandomUtil.rand.nextInt(120) == 0) {
 			spawnClone(mColor, mPosition, mVelocity, mFoodLevel);
 		}
 		mSize = foodToSize(mFoodLevel);
@@ -102,7 +105,7 @@ public class EntityBot extends Entity {
 			mVelocity.scale(mSize);
 			food.getVelocity().scale(food.getSize());
 			Vector2f.add(mVelocity, food.getVelocity(), mVelocity);
-			mVelocity.scale((float) (1.0/mSize));
+			mVelocity.scale((float) (1.0/(mSize + food.getSize())));
 			
 		}
 	}
@@ -120,29 +123,40 @@ public class EntityBot extends Entity {
 		/*
 		 * Algorithm:
 		 * Generate offspring vector 
-		 * 	0.5x to 2x original vector speed
+		 * 	0.5x to 0.8x original vector speed
 		 * 	-90<theta<90 rotation of original vector
 		 * Alter original velocity to conserve momentum
-		 * v1 = u1 + (m2/m1)(u1-v1)
+		 * v1 = (m1u1-m3v2)/(m1-m3)
 		 */
 		
 		// Generate theta: -PI/2 < THETA < PI/2
-		float theta = (float) (Math.PI/2.0 * (RandomUtil.rand.nextFloat() - 0.5));
+		float theta = (float) (Math.PI * (RandomUtil.rand.nextFloat() - 0.5));
 		float x = (float) (velocity.x * Math.cos(theta) - velocity.y * Math.sin(theta));
 		float y = (float) (velocity.x * Math.sin(theta) + velocity.y * Math.cos(theta));
 		
 		Vector2f newVelocity = new Vector2f(x, y);
 		
 		// 0.5x to 0.8x vector allowed
-		float scale = RandomUtil.rand.nextFloat() * 0.8F + 0.5F;
+		float scale = RandomUtil.rand.nextFloat() * 0.3F + 0.5F;
 		newVelocity.scale(scale);
 		
-		Vector2f copyOriginalVelocity = new Vector2f(velocity.x, velocity.y);
-		Vector2f.sub(copyOriginalVelocity, newVelocity, copyOriginalVelocity);
-		copyOriginalVelocity.scale((float) (0.2/foodToSize(mFoodLevel)));
-		Vector2f.add(copyOriginalVelocity, velocity, velocity);
+		Vector2f momentum = new Vector2f(velocity.x, velocity.y);
+		momentum.scale(foodToSize(foodLevel));
 		
-		EntityBot offspring = new EntityBot(color, position, velocity, 0.2F);
+		newVelocity.scale(0.2F);
+		Vector2f newMomentum = new Vector2f();
+		Vector2f.sub(momentum, newVelocity, newMomentum);
+		// Undo scale from before 
+		newVelocity.scale(5F);
+		
+		newMomentum.scale((float) (1.0/(foodToSize(foodLevel)-0.2F)));
+		mVelocity = newMomentum;
+		
+		// Shift the little babby out of the way of big mummy
+		Vector2f positionShift = new Vector2f((float)(1.05 * mSize * -newVelocity.x), (float) (1.05 * mSize * -newVelocity.y));
+		Vector2f.add(position, positionShift, position);
+		
+		EntityBot offspring = new EntityBot(color, position, newVelocity, 0.2F);
 		GlobalEventHandler.fireEvent(Event.ENTITY_BOT_CREATED, offspring);
 	}
 	

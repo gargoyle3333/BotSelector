@@ -22,6 +22,7 @@ public class SimController implements IEventHandler {
 	public SimController() {
 		GlobalEventHandler.subscribeEvent(this, Event.UPDATE_ENTITIES);
 		GlobalEventHandler.subscribeEvent(this, Event.DRAW_ENTITIES);
+		GlobalEventHandler.subscribeEvent(this, Event.ENTITY_BOT_CREATED);
 		
 		mRegister = new SimRegister();
 		botsToAdd = new ArrayList<EntityBot>();
@@ -90,12 +91,13 @@ public class SimController implements IEventHandler {
 		Vector2f.sub(bot.getPosition(), entity.getPosition(), compare);
 		if (compare.length() <= bot.getSize() + entity.getSize()) {
 			// Collision!!
-			if (bot.getSize() == entity.getSize()) {
+			boolean checkColor = bot.getColor().equals(entity.getColor());
+			if (bot.getSize() == entity.getSize() || bot.getColor().equals(entity.getColor())) {
 				// Same size, so bounce off
 				// TODO bounce off :)
 				Vector2f newBot = new Vector2f();
 				Vector2f newEntity = new Vector2f();
-				float massA = 1, massB = 1; // TODO implement masses
+				float massA = bot.getSize(), massB = entity.getSize();
 				
 				Vector2f velA = new Vector2f(bot.getVelocity().x, bot.getVelocity().y);
 				Vector2f velB = new Vector2f(entity.getVelocity().x, entity.getVelocity().y);
@@ -116,7 +118,11 @@ public class SimController implements IEventHandler {
 				
 			} else if (bot.getSize() < entity.getSize()) {
 				if (entity instanceof EntityBot) {
-					((EntityBot)entity).consume(bot);
+					if (entity.getColor().equals(bot.getColor())) {
+						
+					} else {
+						((EntityBot)entity).consume(bot);
+					}
 				} else {
 					if (compare.x < entity.getSize()) {
 						// Left or right face

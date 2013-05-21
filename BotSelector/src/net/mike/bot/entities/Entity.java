@@ -31,6 +31,14 @@ public abstract class Entity {
 		return mSize;
 	}
 
+	public Color getColor() {
+		return mColor;
+	}
+
+	public void setColor(Color color) {
+		this.mColor = color;
+	}
+
 	public void setSize(float size) {
 		this.mSize = size;
 	}
