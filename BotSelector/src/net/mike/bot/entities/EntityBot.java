@@ -139,7 +139,8 @@ public class EntityBot extends Entity {
 		Vector2f newVelocity = new Vector2f(x, y);
 		
 		// 0.5x to 0.8x vector allowed
-		float scale = RandomUtil.rand.nextFloat() * 0.3F + 0.5F;
+		float lowerBound = 0.8F, upperBound = 1.5F;
+		float scale = RandomUtil.rand.nextFloat() * (upperBound-lowerBound) + lowerBound;
 		newVelocity.scale(scale);
 		
 		Vector2f momentum = new Vector2f(velocity.x, velocity.y);
