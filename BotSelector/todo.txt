@@ -1,5 +1,6 @@
 TODO:
 
+Enlarge screen, and allow movement around it.
 Get bots accelerating and decelerating.
 Same species bots should mate.
 Bots can hunt each other or food specks.
