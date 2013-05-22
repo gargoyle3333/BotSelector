@@ -1,7 +1,16 @@
 TODO:
 
 Get bots accelerating and decelerating.
-Same colour bots should mate.
+Same species bots should mate.
 Bots can hunt each other or food specks.
 
-Bots should rely less on colour and more on species - full tree should be implemented! Genus, Kingdom, Species etc.
+Bots should rely less on colour and more on species - full tree should be implemented! 
+	Kingdom - Topmost division. Animals are animalia.
+	Phylum (division for plants) - Phylum cordata has mammals, birds, reptiles, amphibians.
+	Class - Similar orders, e.g. mammals.
+	Order - Similar families, e.g. felidae are Carnivora order.
+	Family - A group of similar genus, e.g. felidae has cats and leopard
+	Genus - 1 or more similar species, e.g. Panthera has lion and tiger
+	Species - Similar form, shape and reproductive features
+	
+	Source for above: http://www.thebigger.com/biology/the-living-world/what-are-taxonomic-hierarchy-categories/
