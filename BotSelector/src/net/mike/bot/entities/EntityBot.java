@@ -1,5 +1,6 @@
 package net.mike.bot.entities;
 
+import net.mike.bot.MainDisplay;
 import net.mike.bot.event.Event;
 import net.mike.bot.event.GlobalEventHandler;
 import net.mike.bot.util.RandomUtil;
@@ -83,7 +84,7 @@ public class EntityBot extends Entity {
 			angle = -90 + Math.toDegrees(Math.atan(mVelocity.y / -mVelocity.x));
 		}
 		
-		GL11.glTranslatef(mPosition.x * Display.getWidth(), mPosition.y * Display.getHeight(), 0);
+		GL11.glTranslatef(mPosition.x * MainDisplay.BOARD_WIDTH, mPosition.y * MainDisplay.BOARD_HEIGHT, 0);
 		GL11.glRotated(angle, 0D, 0D, -1D);
 		GL11.glScaled((float)Display.getWidth(), (float)Display.getHeight(), 0);
 		

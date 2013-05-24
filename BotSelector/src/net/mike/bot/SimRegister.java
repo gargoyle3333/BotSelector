@@ -11,7 +11,7 @@ import net.mike.bot.event.IEventHandler;
 
 public class SimRegister implements IEventHandler {
 	
-	private static final int INITIAL_BOT_ENTITIES = 20;
+	private static final int INITIAL_BOT_ENTITIES = 30;
 	private static final int FOOD_SPECKS = 30;
 	
 	private List<EntityBot> mBotEntityList;

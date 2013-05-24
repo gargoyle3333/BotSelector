@@ -15,3 +15,5 @@ Bots should rely less on colour and more on species - full tree should be implem
 	Species - Similar form, shape and reproductive features
 	
 	Source for above: http://www.thebigger.com/biology/the-living-world/what-are-taxonomic-hierarchy-categories/
+	
+Create different enums for different event types
