@@ -1,5 +1,6 @@
 package net.mike.bot.entities;
 
+import net.mike.bot.MainDisplay;
 import net.mike.bot.util.RandomUtil;
 
 import org.lwjgl.opengl.Display;
@@ -39,7 +40,7 @@ public class EntityFoodSpeck extends Entity {
 		GL11.glPushMatrix();
 		
 		GL11.glColor3f(mColor.getRed()/256F, mColor.getGreen()/256F, mColor.getBlue()/256F);
-		GL11.glTranslatef(mPosition.x * Display.getWidth(), mPosition.y * Display.getHeight(), 0);
+		GL11.glTranslatef(mPosition.x * MainDisplay.BOARD_WIDTH, mPosition.y * MainDisplay.BOARD_HEIGHT, 0);
 		
 		GL11.glBegin(GL11.GL_QUADS);
 		float temp = mSize/2 * Display.getWidth();

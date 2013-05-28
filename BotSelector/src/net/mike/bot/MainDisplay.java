@@ -23,7 +23,6 @@ public class MainDisplay implements IEventHandler {
 	
 	public static final int SCREEN_WIDTH = 800;
 	public static final int SCREEN_HEIGHT = 600;
-	public static final int SCREEN_HEIGHT = 600;
 	
 	private int xViewOffset = 0, yViewOffset = 0;
 	private boolean[] arrowKeysPressed;

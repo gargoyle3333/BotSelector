@@ -4,6 +4,8 @@ Enlarge screen, and allow movement around it.
 Get bots accelerating and decelerating.
 Same species bots should mate.
 Bots can hunt each other or food specks.
+Start adding attributes - it's worth considering which attributes to add before this
+Change the triangle shape, it's boring!!
 
 Bots should rely less on colour and more on species - full tree should be implemented! 
 	Kingdom - Topmost division. Animals are animalia.
