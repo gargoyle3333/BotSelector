@@ -24,4 +24,4 @@ Theory for hunting bots (maybe as an initial solution which can be improved):
 	- Detect smaller bots within radius
 	- Calculate probability of hunting bot based on aggressiveness
 	- Follow probability 
-
+Accelerate bots towards other bots if hunting, decelerate if there is nothing
