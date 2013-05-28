@@ -1,5 +1,6 @@
 package net.mike.bot.entities;
 
+import net.mike.bot.MainDisplay;
 import net.mike.bot.event.Event;
 import net.mike.bot.event.GlobalEventHandler;
 import net.mike.bot.util.RandomUtil;
@@ -20,6 +21,17 @@ public class EntityBot extends Entity {
 	
 	private static final float OFFSPRING_SIZE = 0.3F;
 	
+	/*
+	 * Acceleration/Curved paths
+	 * How is this going to work?
+	 * 
+	 * Give a bot a destination position vector
+	 * Bot attempts to get there with acceleration and velocity
+	 * 
+	 * 
+	 */
+	private Vector2f mAcceleration, mRateOfAcc, intendedAcc;
+	
 	public EntityBot() {
 		super();
 		mColor = new Color(RandomUtil.rand.nextInt(256), RandomUtil.rand.nextInt(256), RandomUtil.rand.nextInt(256));
@@ -34,6 +46,11 @@ public class EntityBot extends Entity {
 		mFoodLevel = RandomUtil.rand.nextFloat();
 		mVelocity = new Vector2f(xVel, yVel);
 		mSize = foodToSize(mFoodLevel);
+		
+		mAcceleration = new Vector2f();
+		mRateOfAcc = new Vector2f();
+		intendedAcc = new Vector2f();
+		
 	}
 	
 	public EntityBot(Color color, Vector2f position, Vector2f velocity, float foodLevel) {
@@ -83,7 +100,7 @@ public class EntityBot extends Entity {
 			angle = -90 + Math.toDegrees(Math.atan(mVelocity.y / -mVelocity.x));
 		}
 		
-		GL11.glTranslatef(mPosition.x * Display.getWidth(), mPosition.y * Display.getHeight(), 0);
+		GL11.glTranslatef(mPosition.x * MainDisplay.BOARD_WIDTH, mPosition.y * MainDisplay.BOARD_HEIGHT, 0);
 		GL11.glRotated(angle, 0D, 0D, -1D);
 		GL11.glScaled((float)Display.getWidth(), (float)Display.getHeight(), 0);
 		
