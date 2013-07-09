@@ -1,9 +1,12 @@
-package net.mike.bot.entities;
+package net.bot.entities;
 
 import org.lwjgl.util.Color;
 import org.lwjgl.util.vector.Vector2f;
 
 public abstract class Entity {
+	
+	// Gravitational constant
+	protected static final double G = 0.3;
 	
 	protected State mState;
 	protected Color mColor;

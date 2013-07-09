@@ -1,4 +1,4 @@
-package net.mike.bot.util;
+package net.bot.util;
 
 import java.util.Random;
 

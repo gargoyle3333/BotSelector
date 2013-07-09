@@ -1,35 +1,37 @@
-package net.mike.bot;
+package net.bot;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import net.mike.bot.entities.Entity;
-import net.mike.bot.entities.EntityBot;
-import net.mike.bot.entities.EntityFoodSpeck;
-import net.mike.bot.event.Event;
-import net.mike.bot.event.GlobalEventHandler;
-import net.mike.bot.event.IEventHandler;
+import net.bot.entities.Entity;
+import net.bot.entities.EntityBot;
+import net.bot.entities.EntityFoodSpeck;
+import net.bot.event.handler.DisplayEventHandler;
+import net.bot.event.handler.EntityEventHandler;
+import net.bot.event.listener.IDisplayEventListener;
+import net.bot.input.KeyboardInput;
 
 import org.lwjgl.util.vector.Vector2f;
 
-public class SimController implements IEventHandler {
+public class SimController {
 	
 	private SimRegister mRegister;
-	
 	private List<EntityBot> botsToAdd;
 	
 	public SimController() {
-		GlobalEventHandler.subscribeEvent(this, Event.UPDATE_ENTITIES);
-		GlobalEventHandler.subscribeEvent(this, Event.DRAW_ENTITIES);
-		GlobalEventHandler.subscribeEvent(this, Event.ENTITY_BOT_CREATED);
-		
 		mRegister = new SimRegister();
 		botsToAdd = new ArrayList<EntityBot>();
-		
+		DisplayEventHandler.addListener(new IDisplayEventListener() {
+			@Override
+			public void onUpdate(double delta) {
+				updateEntities(delta);
+				drawEntities();
+			}
+		});
 	}
 	
-	private void updateEntities() {
+	public void updateEntities(double delta) {
 		
 		// Check for age in food specks
 		Iterator<EntityFoodSpeck> foodEntityIterator = mRegister.getFoodEntityList().iterator();
@@ -56,18 +58,18 @@ public class SimController implements IEventHandler {
 		}
 		
 		// Remove dead specks
-		int specksDestroyed = 0;
+		int specksDead = 0;
 		foodEntityIterator = mRegister.getFoodEntityList().iterator();
 		while (foodEntityIterator.hasNext()) {
 			Entity entity = foodEntityIterator.next();
 			if(!entity.isAlive()) {
+				specksDead++;
 				foodEntityIterator.remove();
-				specksDestroyed++;
 			}
 		}
-		
-		for (int i = 0; i < specksDestroyed; i++) {
-			GlobalEventHandler.fireEvent(Event.ENTITY_FOOD_SPECK_DESTROYED, null);
+		// Send events. Couldn't be done before as event causes modification to list.
+		for (int i = 0; i < specksDead; i++) {
+			EntityEventHandler.foodDestroyed();
 		}
 		
 		// Remove dead bots
@@ -136,7 +138,7 @@ public class SimController implements IEventHandler {
 		}
 	}
 
-	private void drawEntities() {
+	public void drawEntities() {
 		Iterator<EntityBot> botEntityIterator = mRegister.getBotEntityList().iterator();
 		while (botEntityIterator.hasNext()) {
 			// Draw
@@ -149,23 +151,11 @@ public class SimController implements IEventHandler {
 		}
 	}
 	
-	@Override
-	public void handleEvent(Event event, Object info) {
-		switch (event) {
-		case UPDATE_ENTITIES:
-			updateEntities();
-			break;
-		case DRAW_ENTITIES:
-			drawEntities();
-			break;
-		case ENTITY_BOT_CREATED:
-			botsToAdd.add((EntityBot) info);
-			break;
-		default:
-			System.err.println("Unexpected event received in SimController: " + event);
-			break;
-		}
-		
+	public static void main(String[] args) {
+		new SimController();
+		new KeyboardInput();
+		MainDisplay display = new MainDisplay();
+		display.run();
 	}
 
 }

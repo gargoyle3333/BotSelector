@@ -1,12 +1,8 @@
-package net.mike.bot.entities;
+package net.bot.entities;
 
-import net.mike.bot.MainDisplay;
-import net.mike.bot.event.Event;
-import net.mike.bot.event.GlobalEventHandler;
-import net.mike.bot.util.RandomUtil;
-
-import org.lwjgl.opengl.Display;
-import org.lwjgl.opengl.GL11;
+import net.bot.event.handler.EntityEventHandler;
+import static net.bot.util.RandomUtil.rand;
+import static org.lwjgl.opengl.GL11.*;
 import org.lwjgl.util.Color;
 import org.lwjgl.util.vector.Vector2f;
 
@@ -30,26 +26,27 @@ public class EntityBot extends Entity {
 	 * 
 	 * 
 	 */
-	private Vector2f mAcceleration, mRateOfAcc, intendedAcc;
+//	private Vector2f mAcceleration, mRateOfAcc, intendedAcc;
 	
 	public EntityBot() {
 		super();
-		mColor = new Color(RandomUtil.rand.nextInt(256), RandomUtil.rand.nextInt(256), RandomUtil.rand.nextInt(256));
-		mPosition = new Vector2f(RandomUtil.rand.nextFloat(), RandomUtil.rand.nextFloat());
+		mColor = new Color(rand.nextInt(256), rand.nextInt(256), rand.nextInt(256));
+		mPosition = new Vector2f(rand.nextFloat(), rand.nextFloat());
 		
 		// Any neater way to do this?
-		float xVel = (float) ((RandomUtil.rand.nextInt(MAX_SPEED-MIN_SPEED) + MIN_SPEED)/SPEED_MULTIPLIER);
-		float yVel = (float) ((RandomUtil.rand.nextInt(MAX_SPEED-MIN_SPEED) + MIN_SPEED)/SPEED_MULTIPLIER);
-		if (RandomUtil.rand.nextInt(10) % 2 == 0) xVel *= -1;
-		if (RandomUtil.rand.nextInt(10) % 2 == 0) yVel *= -1;
+		float xVel = (float) ((rand.nextInt(MAX_SPEED-MIN_SPEED) + MIN_SPEED)/SPEED_MULTIPLIER);
+		float yVel = (float) ((rand.nextInt(MAX_SPEED-MIN_SPEED) + MIN_SPEED)/SPEED_MULTIPLIER);
+		if (rand.nextInt(10) % 2 == 0) xVel *= -1;
+		if (rand.nextInt(10) % 2 == 0) yVel *= -1;
 		
-		mFoodLevel = RandomUtil.rand.nextFloat();
+		mFoodLevel = rand.nextFloat();
 		mVelocity = new Vector2f(xVel, yVel);
 		mSize = foodToSize(mFoodLevel);
 		
-		mAcceleration = new Vector2f();
-		mRateOfAcc = new Vector2f();
-		intendedAcc = new Vector2f();
+		// TODO implement acceleration
+//		mAcceleration = new Vector2f();
+//		mRateOfAcc = new Vector2f();
+//		intendedAcc = new Vector2f();
 		
 	}
 	
@@ -81,7 +78,7 @@ public class EntityBot extends Entity {
 			mState = State.STARVED;
 		}
 		// If food level high enough, 1 in 120 chance of spawning
-		if (mFoodLevel >= 0.4 && RandomUtil.rand.nextInt(120) == 0) {
+		if (mFoodLevel >= 0.4 && rand.nextInt(120) == 0) {
 			spawnClone(mColor, mPosition, mVelocity, mFoodLevel);
 		}
 		mSize = foodToSize(mFoodLevel);
@@ -89,7 +86,7 @@ public class EntityBot extends Entity {
 
 	@Override
 	public void draw() {
-		GL11.glPushMatrix();
+		glPushMatrix();
 		
 		double angle = 0;
 		if (mVelocity.x == 0) {
@@ -100,18 +97,17 @@ public class EntityBot extends Entity {
 			angle = -90 + Math.toDegrees(Math.atan(mVelocity.y / -mVelocity.x));
 		}
 		
-		GL11.glTranslatef(mPosition.x * MainDisplay.BOARD_WIDTH, mPosition.y * MainDisplay.BOARD_HEIGHT, 0);
-		GL11.glRotated(angle, 0D, 0D, -1D);
-		GL11.glScaled((float)Display.getWidth(), (float)Display.getHeight(), 0);
+		glTranslatef(mPosition.x, mPosition.y, 0);
+		glRotated(angle, 0D, 0D, -1D);
 		
-		GL11.glBegin(GL11.GL_TRIANGLES);
-		GL11.glColor3f(mColor.getRed()/256F, mColor.getGreen()/256F, mColor.getBlue()/256F);
-		GL11.glVertex3f(0, mSize, 0);
-		GL11.glVertex3f(mSize, -mSize, 0);
-		GL11.glVertex3f(-mSize, -mSize, 0);
-		GL11.glEnd();
+		glBegin(GL_TRIANGLES);
+		glColor3f(mColor.getRed()/256F, mColor.getGreen()/256F, mColor.getBlue()/256F);
+		glVertex3f(0, mSize, 0);
+		glVertex3f(mSize, -mSize, 0);
+		glVertex3f(-mSize, -mSize, 0);
+		glEnd();
 		
-		GL11.glPopMatrix();
+		glPopMatrix();
 		
 	}
 	
@@ -149,7 +145,7 @@ public class EntityBot extends Entity {
 		 */
 		
 		// Generate theta: -PI/2 < THETA < PI/2
-		float theta = (float) (Math.PI * (RandomUtil.rand.nextFloat() - 0.5));
+		float theta = (float) (Math.PI * (rand.nextFloat() - 0.5));
 		float x = (float) (velocity.x * Math.cos(theta) - velocity.y * Math.sin(theta));
 		float y = (float) (velocity.x * Math.sin(theta) + velocity.y * Math.cos(theta));
 		
@@ -157,7 +153,7 @@ public class EntityBot extends Entity {
 		
 		// 0.5x to 0.8x vector allowed
 		float lowerBound = 0.8F, upperBound = 1.5F;
-		float scale = RandomUtil.rand.nextFloat() * (upperBound-lowerBound) + lowerBound;
+		float scale = rand.nextFloat() * (upperBound-lowerBound) + lowerBound;
 		newVelocity.scale(scale);
 		
 		Vector2f momentum = new Vector2f(velocity.x, velocity.y);
@@ -182,7 +178,7 @@ public class EntityBot extends Entity {
 		Color newColor = new Color(color.getRed(), color.getGreen(), color.getBlue());
 		
 		EntityBot offspring = new EntityBot(newColor, newPosition, newVelocity, OFFSPRING_SIZE);
-		GlobalEventHandler.fireEvent(Event.ENTITY_BOT_CREATED, offspring);
+		EntityEventHandler.botCreated(offspring);
 	}
 	
 }
