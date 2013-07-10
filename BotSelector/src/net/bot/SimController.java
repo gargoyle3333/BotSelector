@@ -10,6 +10,7 @@ import net.bot.entities.EntityFoodSpeck;
 import net.bot.event.handler.DisplayEventHandler;
 import net.bot.event.handler.EntityEventHandler;
 import net.bot.event.listener.IDisplayEventListener;
+import net.bot.event.listener.IEntityEventListener;
 import net.bot.input.KeyboardInput;
 
 import org.lwjgl.util.vector.Vector2f;
@@ -27,6 +28,21 @@ public class SimController {
 			public void onUpdate(double delta) {
 				updateEntities(delta);
 				drawEntities();
+			}
+		});
+		EntityEventHandler.addListener(new IEntityEventListener() {
+			@Override
+			public void onFoodDestroyed() {}
+			
+			@Override
+			public void onFoodCreated(EntityFoodSpeck speck) {}
+			
+			@Override
+			public void onBotDestroyed(EntityBot bot) {}
+			
+			@Override
+			public void onBotCreated(EntityBot bot) {
+				botsToAdd.add(bot);
 			}
 		});
 	}
@@ -50,6 +66,7 @@ public class SimController {
 			EntityBot bot = bots.get(i);
 			for (int j = i + 1; j < bots.size(); j++) {
 				collideOrConsume(bot, bots.get(j));
+				// Add forces for acceleration
 			}
 			for (EntityFoodSpeck speck : mRegister.getFoodEntityList()) {
 				// Check for collision here
