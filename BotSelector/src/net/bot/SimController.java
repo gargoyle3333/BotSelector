@@ -67,10 +67,12 @@ public class SimController {
 			for (int j = i + 1; j < bots.size(); j++) {
 				collideOrConsume(bot, bots.get(j));
 				// Add forces for acceleration
+				bot.addForce(bots.get(j));
 			}
 			for (EntityFoodSpeck speck : mRegister.getFoodEntityList()) {
 				// Check for collision here
 				collideOrConsume(bot, speck);
+				bot.addForce(speck);
 			}
 		}
 		

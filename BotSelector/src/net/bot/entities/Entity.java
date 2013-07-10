@@ -14,6 +14,8 @@ public abstract class Entity {
 	protected int mFramesAlive = 0;
 	protected float mSize, mFoodLevel;
 	
+	protected Vector2f mResolvedForce;
+	
 	public Vector2f getPosition() {
 		return mPosition;
 	}

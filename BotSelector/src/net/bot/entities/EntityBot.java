@@ -17,6 +17,8 @@ public class EntityBot extends Entity {
 	
 	private static final float OFFSPRING_SIZE = 0.3F;
 	
+	private static final float MAXIMUM_FORCE_DISTANCE = 0.1F;
+	
 	/*
 	 * Acceleration/Curved paths
 	 * How is this going to work?
@@ -42,6 +44,7 @@ public class EntityBot extends Entity {
 		mFoodLevel = rand.nextFloat();
 		mVelocity = new Vector2f(xVel, yVel);
 		mSize = foodToSize(mFoodLevel);
+		mResolvedForce = new Vector2f(0,0);
 		
 		// TODO implement acceleration
 //		mAcceleration = new Vector2f();
@@ -57,12 +60,14 @@ public class EntityBot extends Entity {
 		mVelocity = velocity;
 		mFoodLevel = foodLevel;
 		mSize = foodToSize(foodLevel);
+		mResolvedForce = new Vector2f(0,0);
 	}
 
 	@Override
 	public void update() {
 		// New position
 		Vector2f.add(mPosition, mVelocity, mPosition);
+		Vector2f.add(mVelocity, (Vector2f) mResolvedForce.scale((float) (1.0/mSize)), mVelocity);
 		// Bounce off walls
 		if (mPosition.x < 0 || mPosition.x > 1) {
 			mVelocity.x *= -1;
@@ -82,6 +87,7 @@ public class EntityBot extends Entity {
 			spawnClone(mColor, mPosition, mVelocity, mFoodLevel);
 		}
 		mSize = foodToSize(mFoodLevel);
+		mResolvedForce = new Vector2f(0,0);
 	}
 
 	@Override
@@ -179,6 +185,24 @@ public class EntityBot extends Entity {
 		
 		EntityBot offspring = new EntityBot(newColor, newPosition, newVelocity, OFFSPRING_SIZE);
 		EntityEventHandler.botCreated(offspring);
+	}
+	
+	/**
+	 * Given an entity and a constant G, calculates and adds force acting upon the bot.
+	 * Also negates the force if the other entity is larger.
+	 * @param entity
+	 */
+	public void addForce(Entity entity) {
+		// Check distance
+		Vector2f distance = new Vector2f(entity.getPosition().x - mPosition.x, entity.getPosition().y - mPosition.y);
+		if (distance.length() > MAXIMUM_FORCE_DISTANCE) return;
+		double force = (G * (mSize * entity.getSize()))/distance.lengthSquared();
+		double theta = Vector2f.angle(mPosition, entity.getPosition());
+		Vector2f resolved = new Vector2f((float)(force * Math.sin(theta)), (float)(force * Math.cos(theta)));
+		if (entity.getSize() > mSize) {
+			resolved.negate();
+		}
+		Vector2f.add(mResolvedForce, resolved, mResolvedForce);
 	}
 	
 }

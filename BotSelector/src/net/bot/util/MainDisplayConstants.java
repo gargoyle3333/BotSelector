@@ -7,7 +7,7 @@ public class MainDisplayConstants {
 	public static final double SCREEN_PAN = 0.01;
 	public static final double BOARD_WIDTH = 1;
 	public static final double BOARD_HEIGHT = 1;
-	public static final double SCREEN_WIDTH = 0.5;
-	public static final double SCREEN_HEIGHT = 0.5;
+	public static final double SCREEN_WIDTH = 1;
+	public static final double SCREEN_HEIGHT = 1;
 
 }
