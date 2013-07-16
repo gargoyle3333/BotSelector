@@ -8,27 +8,18 @@ import org.lwjgl.util.vector.Vector2f;
 
 public class EntityBot extends Entity {
 	
-	private static final int MAX_SPEED = 7;
-	private static final int MIN_SPEED = 2;
+	private static final int MAX_SPAWN_SPEED = 7;
+	private static final int MIN_SPAWN_SPEED = 2;
 	private static final float SPEED_MULTIPLIER = 1000F; // = 0.007 max, 0.002 min
 	
 	private static final int FRAMES_BEFORE_FOOD_DECREMENT = 60;
 	private static final float FOOD_DECREMENT = 0.005F;
 	
-	private static final float OFFSPRING_SIZE = 0.3F;
+	private static final float OFFSPRING_PROPORTION = 0.3F;
+	private static final float OFFSPRING_MIN_FOOD = 0.2F;
+	private static final float OFFSPRING_MAX_FOOD = 50F;
 	
 	private static final float MAXIMUM_FORCE_DISTANCE = 0.1F;
-	
-	/*
-	 * Acceleration/Curved paths
-	 * How is this going to work?
-	 * 
-	 * Give a bot a destination position vector
-	 * Bot attempts to get there with acceleration and velocity
-	 * 
-	 * 
-	 */
-//	private Vector2f mAcceleration, mRateOfAcc, intendedAcc;
 	
 	public EntityBot() {
 		super();
@@ -36,20 +27,15 @@ public class EntityBot extends Entity {
 		mPosition = new Vector2f(rand.nextFloat(), rand.nextFloat());
 		
 		// Any neater way to do this?
-		float xVel = (float) ((rand.nextInt(MAX_SPEED-MIN_SPEED) + MIN_SPEED)/SPEED_MULTIPLIER);
-		float yVel = (float) ((rand.nextInt(MAX_SPEED-MIN_SPEED) + MIN_SPEED)/SPEED_MULTIPLIER);
-		if (rand.nextInt(10) % 2 == 0) xVel *= -1;
-		if (rand.nextInt(10) % 2 == 0) yVel *= -1;
+		float xVel = (float) ((rand.nextInt(MAX_SPAWN_SPEED-MIN_SPAWN_SPEED) + MIN_SPAWN_SPEED)/SPEED_MULTIPLIER);
+		float yVel = (float) ((rand.nextInt(MAX_SPAWN_SPEED-MIN_SPAWN_SPEED) + MIN_SPAWN_SPEED)/SPEED_MULTIPLIER);
+		if (rand.nextFloat() >= 0.5) xVel *= -1;
+		if (rand.nextFloat() >= 0.5) yVel *= -1;
 		
 		mFoodLevel = rand.nextFloat();
 		mVelocity = new Vector2f(xVel, yVel);
 		mSize = foodToSize(mFoodLevel);
 		mResolvedForce = new Vector2f(0,0);
-		
-		// TODO implement acceleration
-//		mAcceleration = new Vector2f();
-//		mRateOfAcc = new Vector2f();
-//		intendedAcc = new Vector2f();
 		
 	}
 	
@@ -82,12 +68,19 @@ public class EntityBot extends Entity {
 		if (mFoodLevel < 0) {
 			mState = State.STARVED;
 		}
-		// If food level high enough, 1 in 120 chance of spawning
-		if (mFoodLevel >= 0.4 && rand.nextInt(120) == 0) {
-			spawnClone(mColor, mPosition, mVelocity, mFoodLevel);
+		
+		// The bigger the bot, the more likely it is to spawn offspring
+		if (rand.nextFloat() < chanceOfSpawn(mFoodLevel, OFFSPRING_MIN_FOOD, OFFSPRING_MAX_FOOD)) {
+			spawnClone();
 		}
+		
 		mSize = foodToSize(mFoodLevel);
 		mResolvedForce = new Vector2f(0,0);
+	}
+
+	private float chanceOfSpawn(float currentFoodLevel, float minFoodLevel,
+			float maxFoodLevel) {
+		return (currentFoodLevel-minFoodLevel)/(maxFoodLevel-minFoodLevel);
 	}
 
 	@Override
@@ -136,15 +129,22 @@ public class EntityBot extends Entity {
 		return (float) (0.01 + food * 0.025);
 	}
 	
-	private void spawnClone(Color color, Vector2f position, Vector2f velocity, float foodLevel) {
-		// New bots should be of food level OFFSPRING_SIZE
-		if (foodLevel <= OFFSPRING_SIZE) return;
-		mFoodLevel -= OFFSPRING_SIZE;
-		
+	/**
+	 * Spawns a clone based on the parent's attributes. This method will scale down the parent bot and change its
+	 * momentum as the new bot is spawned.
+	 * 
+	 * @param color The parent bot's colour.
+	 * @param position The parent bot's position vector.
+	 * @param velocity The parent bot's velocity vector.
+	 * @param foodLevel The parent bot's food level.
+	 * @param offspringProportion The size of the offspring as a proportion of the parent bot.
+	 */
+	private void spawnClone() {
+		float offspringFoodLevel = OFFSPRING_PROPORTION * mFoodLevel;
 		/*
 		 * Algorithm:
 		 * Generate offspring vector 
-		 * 	0.5x to 0.8x original vector speed
+		 * 	0.8x to 1.5x original vector speed
 		 * 	-90<theta<90 rotation of original vector
 		 * Alter original velocity to conserve momentum
 		 * v1 = (m1u1-m3v2)/(m1-m3)
@@ -152,38 +152,47 @@ public class EntityBot extends Entity {
 		
 		// Generate theta: -PI/2 < THETA < PI/2
 		float theta = (float) (Math.PI * (rand.nextFloat() - 0.5));
-		float x = (float) (velocity.x * Math.cos(theta) - velocity.y * Math.sin(theta));
-		float y = (float) (velocity.x * Math.sin(theta) + velocity.y * Math.cos(theta));
+		// Use trig to get new velocity. Should be the same speed as the parent
+		float x = (float) (mVelocity.x * Math.cos(theta) - mVelocity.y * Math.sin(theta));
+		float y = (float) (mVelocity.x * Math.sin(theta) + mVelocity.y * Math.cos(theta));
 		
-		Vector2f newVelocity = new Vector2f(x, y);
+		Vector2f offspringVelocity = new Vector2f(x, y);
 		
-		// 0.5x to 0.8x vector allowed
+		// 0.8x to 1.5x vector allowed, so calculate the scale, then scale the new velocity
 		float lowerBound = 0.8F, upperBound = 1.5F;
 		float scale = rand.nextFloat() * (upperBound-lowerBound) + lowerBound;
-		newVelocity.scale(scale);
+		offspringVelocity.scale(scale);
 		
-		Vector2f momentum = new Vector2f(velocity.x, velocity.y);
-		momentum.scale(foodToSize(foodLevel));
+		// Copy the parent velocity so we can scale without messing things up
+		Vector2f velocityCopy = new Vector2f(mVelocity.x, mVelocity.y);
+		// Scale to new size, m1u1
+		velocityCopy.scale(foodToSize(mFoodLevel));
 		
-		newVelocity.scale(OFFSPRING_SIZE);
+		// Calculate m3v2
+		offspringVelocity.scale(foodToSize(offspringFoodLevel));
 		Vector2f newMomentum = new Vector2f();
-		Vector2f.sub(momentum, newVelocity, newMomentum);
+		// m1u1-m3v2
+		Vector2f.sub(velocityCopy, offspringVelocity, newMomentum);
 		// Undo scale from before 
-		newVelocity.scale(5F);
+		offspringVelocity.scale((float) (1.0/(foodToSize(offspringFoodLevel))));
 		
-		newMomentum.scale((float) (1.0/(foodToSize(foodLevel)-OFFSPRING_SIZE)));
+		// Divide by m1-m3
+		newMomentum.scale((float) (1.0/(foodToSize(mFoodLevel)-OFFSPRING_PROPORTION)));
 		mVelocity = newMomentum;
 		
-		Vector2f newPosition = new Vector2f(position.x, position.y);
+		// Reset food level of parent
+		mFoodLevel -= offspringFoodLevel;
+		
+		Vector2f offspringPosition = new Vector2f(mPosition.x, mPosition.y);
 		
 		// Shift the little babby out of the way of big mummy by backtracking 60 frames of velocity
-		newVelocity.scale(60F);
-		Vector2f.sub(newPosition, newVelocity, newPosition);
-		newVelocity.scale((float) (1/60.0));
+		offspringVelocity.scale(60F);
+		Vector2f.sub(offspringPosition, offspringVelocity, offspringPosition);
+		offspringVelocity.scale((float) (1/60.0));
 		
-		Color newColor = new Color(color.getRed(), color.getGreen(), color.getBlue());
+		Color offspringColor = new Color(mColor.getRed(), mColor.getGreen(), mColor.getBlue());
 		
-		EntityBot offspring = new EntityBot(newColor, newPosition, newVelocity, OFFSPRING_SIZE);
+		EntityBot offspring = new EntityBot(offspringColor, offspringPosition, offspringVelocity, offspringFoodLevel);
 		EntityEventHandler.botCreated(offspring);
 	}
 	
