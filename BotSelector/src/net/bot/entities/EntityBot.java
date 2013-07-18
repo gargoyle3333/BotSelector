@@ -210,11 +210,19 @@ public class EntityBot extends Entity {
 	 */
 	public void addForce(Entity entity) {
 		// Check distance
-		Vector2f distance = new Vector2f(entity.getPosition().x - mPosition.x, entity.getPosition().y - mPosition.y);
-		if (distance.length() > MAXIMUM_FORCE_DISTANCE) return;
-		double force = (G * (mSize * entity.getSize()))/distance.lengthSquared();
-		double theta = Vector2f.angle(mPosition, entity.getPosition());
-		Vector2f resolved = new Vector2f((float)(force * Math.sin(theta)), (float)(force * Math.cos(theta)));
+		Vector2f displacement = new Vector2f(
+				entity.getPosition().x - mPosition.x, 
+				entity.getPosition().y - mPosition.y);
+		float length = displacement.length();
+		if (length > MAXIMUM_FORCE_DISTANCE) {
+			return;
+		}
+		
+		// Find magnitude of direction vector
+		double force = (G * (mSize * entity.getSize()))/(length*length*length);
+		Vector2f resolved = new Vector2f(
+				(float)(force * displacement.x), 
+				(float)(force * displacement.y));
 		
 		// Run from larger entity or same species.
 		if (entity.getSize() > mSize || entity.getColor().equals(mColor)) {
