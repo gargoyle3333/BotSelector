@@ -22,7 +22,7 @@ public class EntityFoodSpeck extends Entity {
 		mFramesBeforeDeath = rand.nextInt(MAX_FRAMES_ALIVE - MIN_FRAMES_ALIVE) + MIN_FRAMES_ALIVE;
 		mPosition = new Vector2f(rand.nextFloat(), rand.nextFloat());
 		mVelocity = new Vector2f(0,0); 
-		mFoodLevel = 0.01F;
+		mFoodLevel = mSize * 10;
 	}
 	
 	@Override

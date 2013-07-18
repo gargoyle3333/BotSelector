@@ -64,10 +64,14 @@ public class SimController {
 		// Sort out collisions
 		for (int i = 0; i < bots.size(); i++) {
 			EntityBot bot = bots.get(i);
-			for (int j = i + 1; j < bots.size(); j++) {
-				collideOrConsume(bot, bots.get(j));
-				// Add forces for acceleration
-				bot.addForce(bots.get(j));
+			for (int j = 0; j < bots.size(); j++) {
+				if (j > i) {
+					collideOrConsume(bot, bots.get(j));
+				}
+				if (j != i) {
+					// Add forces for acceleration
+					bot.addForce(bots.get(j));
+				}
 			}
 			for (EntityFoodSpeck speck : mRegister.getFoodEntityList()) {
 				// Check for collision here

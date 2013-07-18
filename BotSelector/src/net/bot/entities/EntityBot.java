@@ -11,6 +11,7 @@ public class EntityBot extends Entity {
 	private static final int MAX_SPAWN_SPEED = 7;
 	private static final int MIN_SPAWN_SPEED = 2;
 	private static final float SPEED_MULTIPLIER = 1000F; // = 0.007 max, 0.002 min
+	private static final float MAX_SPEED = 0.003F;
 	
 	private static final int FRAMES_BEFORE_FOOD_DECREMENT = 60;
 	private static final float FOOD_DECREMENT = 0.005F;
@@ -19,7 +20,7 @@ public class EntityBot extends Entity {
 	private static final float OFFSPRING_MIN_FOOD = 0.2F;
 	private static final float OFFSPRING_MAX_FOOD = 50F;
 	
-	private static final float MAXIMUM_FORCE_DISTANCE = 0.1F;
+	private static final float MAXIMUM_FORCE_DISTANCE = 0.3F;
 	
 	public EntityBot() {
 		super();
@@ -55,10 +56,10 @@ public class EntityBot extends Entity {
 		Vector2f.add(mPosition, mVelocity, mPosition);
 		Vector2f.add(mVelocity, (Vector2f) mResolvedForce.scale((float) (1.0/mSize)), mVelocity);
 		// Bounce off walls
-		if (mPosition.x < 0 || mPosition.x > 1) {
+		if (mPosition.x + mVelocity.x < 0 || mPosition.x + mVelocity.x > 1) {
 			mVelocity.x *= -1;
 		}
-		if (mPosition.y < 0 || mPosition.y > 1) {
+		if (mPosition.y + mVelocity.y < 0 || mPosition.y + mVelocity.y > 1) {
 			mVelocity.y *= -1;
 		}
 		// Too old?
@@ -74,9 +75,15 @@ public class EntityBot extends Entity {
 			spawnClone();
 		}
 		
+		float l;
+		if ((l = mVelocity.length()) > MAX_SPEED) {
+			mVelocity.set((mVelocity.x/l)*MAX_SPEED, (mVelocity.y/l)*MAX_SPEED);
+		}
+		
 		mSize = foodToSize(mFoodLevel);
 		mResolvedForce = new Vector2f(0,0);
 	}
+
 
 	private float chanceOfSpawn(float currentFoodLevel, float minFoodLevel,
 			float maxFoodLevel) {
@@ -208,7 +215,9 @@ public class EntityBot extends Entity {
 		double force = (G * (mSize * entity.getSize()))/distance.lengthSquared();
 		double theta = Vector2f.angle(mPosition, entity.getPosition());
 		Vector2f resolved = new Vector2f((float)(force * Math.sin(theta)), (float)(force * Math.cos(theta)));
-		if (entity.getSize() > mSize) {
+		
+		// Run from larger entity or same species.
+		if (entity.getSize() > mSize || entity.getColor().equals(mColor)) {
 			resolved.negate();
 		}
 		Vector2f.add(mResolvedForce, resolved, mResolvedForce);
