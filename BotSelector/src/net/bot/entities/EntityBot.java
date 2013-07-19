@@ -72,6 +72,7 @@ public class EntityBot extends Entity {
 		
 		// The bigger the bot, the more likely it is to spawn offspring
 		if (rand.nextFloat() < chanceOfSpawn(mFoodLevel, OFFSPRING_MIN_FOOD, OFFSPRING_MAX_FOOD)) {
+//			spawnClone();
 			spawnClone();
 		}
 		
@@ -136,71 +137,39 @@ public class EntityBot extends Entity {
 		return (float) (0.01 + food * 0.025);
 	}
 	
-	/**
-	 * Spawns a clone based on the parent's attributes. This method will scale down the parent bot and change its
-	 * momentum as the new bot is spawned.
-	 * 
-	 * @param color The parent bot's colour.
-	 * @param position The parent bot's position vector.
-	 * @param velocity The parent bot's velocity vector.
-	 * @param foodLevel The parent bot's food level.
-	 * @param offspringProportion The size of the offspring as a proportion of the parent bot.
-	 */
 	private void spawnClone() {
-		float offspringFoodLevel = OFFSPRING_PROPORTION * mFoodLevel;
-		/*
-		 * Algorithm:
-		 * Generate offspring vector 
-		 * 	0.8x to 1.5x original vector speed
-		 * 	-90<theta<90 rotation of original vector
-		 * Alter original velocity to conserve momentum
-		 * v1 = (m1u1-m3v2)/(m1-m3)
-		 */
 		
-		// Generate theta: -PI/2 < THETA < PI/2
-		float theta = (float) (Math.PI * (rand.nextFloat() - 0.5));
-		// Use trig to get new velocity. Should be the same speed as the parent
-		float x = (float) (mVelocity.x * Math.cos(theta) - mVelocity.y * Math.sin(theta));
-		float y = (float) (mVelocity.x * Math.sin(theta) + mVelocity.y * Math.cos(theta));
-		
-		Vector2f offspringVelocity = new Vector2f(x, y);
-		
-		// 0.8x to 1.5x vector allowed, so calculate the scale, then scale the new velocity
-		float lowerBound = 0.8F, upperBound = 1.5F;
-		float scale = rand.nextFloat() * (upperBound-lowerBound) + lowerBound;
-		offspringVelocity.scale(scale);
-		
-		// Copy the parent velocity so we can scale without messing things up
-		Vector2f velocityCopy = new Vector2f(mVelocity.x, mVelocity.y);
-		// Scale to new size, m1u1
-		velocityCopy.scale(foodToSize(mFoodLevel));
-		
-		// Calculate m3v2
-		offspringVelocity.scale(foodToSize(offspringFoodLevel));
-		Vector2f newMomentum = new Vector2f();
-		// m1u1-m3v2
-		Vector2f.sub(velocityCopy, offspringVelocity, newMomentum);
-		// Undo scale from before 
-		offspringVelocity.scale((float) (1.0/(foodToSize(offspringFoodLevel))));
-		
-		// Divide by m1-m3
-		newMomentum.scale((float) (1.0/(foodToSize(mFoodLevel)-OFFSPRING_PROPORTION)));
-		mVelocity = newMomentum;
-		
-		// Reset food level of parent
-		mFoodLevel -= offspringFoodLevel;
-		
+		// We need colour, position, velocity and food level.
+		float offspringFood = mFoodLevel * OFFSPRING_PROPORTION;
+		// Get a new velocity that's 3/4 to 5/4 times the parent velocity
+		Vector2f offspringVelocity = new Vector2f(
+				mVelocity.x * (rand.nextFloat() * 0.5f + 0.75f),
+				mVelocity.y * (rand.nextFloat() * 0.5f + 0.75f)
+				);
 		Vector2f offspringPosition = new Vector2f(mPosition.x, mPosition.y);
-		
-		// Shift the little babby out of the way of big mummy by backtracking 60 frames of velocity
-		offspringVelocity.scale(60F);
-		Vector2f.sub(offspringPosition, offspringVelocity, offspringPosition);
-		offspringVelocity.scale((float) (1/60.0));
-		
 		Color offspringColor = new Color(mColor.getRed(), mColor.getGreen(), mColor.getBlue());
 		
-		EntityBot offspring = new EntityBot(offspringColor, offspringPosition, offspringVelocity, offspringFoodLevel);
+		// Alter parent's lost food
+		mFoodLevel -= offspringFood;
+		
+		// Now we have to alter the velocity of the parent.
+		// We use the equation v1 = u1 + (m2/m1)(u1-v2)
+		Vector2f v1 = new Vector2f();
+		float m1 = foodToSize(offspringFood);
+		float m2 = foodToSize(mFoodLevel);
+		
+		Vector2f.sub(mVelocity, offspringVelocity, v1); // u1-v2
+		v1.scale(m2/m1); //(m2/m1)(u1-v2)
+		Vector2f.add(mVelocity, v1, mVelocity);// + u1
+		
+		// Now move the offspring somewhere away from the parent.
+		Vector2f.add(offspringPosition, new Vector2f(60*offspringVelocity.x, 60*offspringVelocity.y), offspringPosition);
+		// Note: this may well trap the offspring in a wall.
+		
+		// Create the offspring.
+		EntityBot offspring = new EntityBot(offspringColor, offspringPosition, offspringVelocity, offspringFood);
 		EntityEventHandler.botCreated(offspring);
+		
 	}
 	
 	/**
