@@ -48,6 +48,7 @@ public class EntityBot extends Entity {
 		mFoodLevel = foodLevel;
 		mSize = foodToSize(foodLevel);
 		mResolvedForce = new Vector2f(0,0);
+		// XXX test commit
 	}
 
 	@Override
