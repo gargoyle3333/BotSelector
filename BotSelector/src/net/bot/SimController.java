@@ -116,7 +116,7 @@ public class SimController {
 		Vector2f.sub(bot.getPosition(), entity.getPosition(), compare);
 		if (compare.length() <= bot.getSize() + entity.getSize()) {
 			// Collision!!
-			if (bot.getSize() == entity.getSize() || bot.getColor().equals(entity.getColor())) {
+			if (bot.getSize() == entity.getSize()) {
 				// Same size or same colour, so bounce off
 				Vector2f newBot = new Vector2f();
 				Vector2f newEntity = new Vector2f();
@@ -154,7 +154,9 @@ public class SimController {
 						bot.getVelocity().y *= -1;
 					}
 				}
-				
+			} else if (bot.getColor().equals(entity.getColor())) {
+				// Do nothing :-)
+				return;
 			} else {
 				bot.consume(entity);
 			}

@@ -72,7 +72,6 @@ public class EntityBot extends Entity {
 		
 		// The bigger the bot, the more likely it is to spawn offspring
 		if (rand.nextFloat() < chanceOfSpawn(mFoodLevel, OFFSPRING_MIN_FOOD, OFFSPRING_MAX_FOOD)) {
-//			spawnClone();
 			spawnClone();
 		}
 		
@@ -162,8 +161,9 @@ public class EntityBot extends Entity {
 		v1.scale(m2/m1); //(m2/m1)(u1-v2)
 		Vector2f.add(mVelocity, v1, mVelocity);// + u1
 		
+		int skipFrames = 30;
 		// Now move the offspring somewhere away from the parent.
-		Vector2f.add(offspringPosition, new Vector2f(60*offspringVelocity.x, 60*offspringVelocity.y), offspringPosition);
+		Vector2f.add(offspringPosition, new Vector2f(skipFrames*offspringVelocity.x, skipFrames*offspringVelocity.y), offspringPosition);
 		// Note: this may well trap the offspring in a wall.
 		
 		// Create the offspring.
