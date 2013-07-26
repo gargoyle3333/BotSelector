@@ -1,7 +1,10 @@
-package net.bot;
+package net.bot.gui;
 
+import net.bot.SimController;
+import net.bot.SimRegister;
 import net.bot.event.handler.DisplayEventHandler;
 import net.bot.event.handler.KeyboardEventHandler;
+import net.bot.event.listener.IDisplayEventListener;
 import net.bot.event.listener.IKeyboardEventListener;
 
 import static net.bot.util.MainDisplayConstants.*;
@@ -14,22 +17,17 @@ import org.lwjgl.util.vector.Vector2f;
 
 import static org.lwjgl.opengl.GL11.*;
 
-public class MainDisplay {
-	
-	private double lastFrameTime = System.currentTimeMillis();
+public class GameScreen implements IScreen {
 	
 	private boolean[] arrowKeysPressed;
 	
-	public MainDisplay() {
-		try {
-			Display.setDisplayMode(new DisplayMode(800, 600));
-			Display.setTitle(GAME_TITLE);
-			Display.setVSyncEnabled(true);
-			Display.create();
-		} catch (LWJGLException e) {
-			e.printStackTrace();
-		}
-		
+	private SimController mController;
+	
+	// Listeners
+	private IKeyboardEventListener mKeyboardListener;
+	private IDisplayEventListener mDisplayListener;
+	
+	public GameScreen() {
 		// Set up viewpoint
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
@@ -39,10 +37,14 @@ public class MainDisplay {
 		glLoadIdentity();
 		
 		arrowKeysPressed = new boolean[4];
+		final Vector2f offset = new Vector2f(0,0);
 		
-		KeyboardEventHandler.addListener(new IKeyboardEventListener() {
+		mController = new SimController();
+		
+		mKeyboardListener = new IKeyboardEventListener() {
+			
 			@Override
-			public void onKeyPressed(int key) {
+			public void onKeyReleased(int key) {
 				switch (key) {
 				case Keyboard.KEY_UP: 
 					arrowKeysPressed[0] = true;
@@ -58,10 +60,11 @@ public class MainDisplay {
 					break;
 				default:
 					break;
-				}
+				}				
 			}
+			
 			@Override
-			public void onKeyReleased(int key) {
+			public void onKeyPressed(int key) {
 				switch(key) {
 				case Keyboard.KEY_UP: 
 					arrowKeysPressed[0] = false;
@@ -75,46 +78,23 @@ public class MainDisplay {
 				case Keyboard.KEY_RIGHT: 
 					arrowKeysPressed[3] = false;
 					break;
-				}
+				}				
 			}
-		});
-	}
-	
-	public void run() {
+		};
+		mDisplayListener = new IDisplayEventListener() {
+			
+			@Override
+			public void onUpdate(double delta) {
+				updateViewOffset(arrowKeysPressed, offset);
+				glMatrixMode(GL_PROJECTION);
+				glLoadIdentity();
+				glOrtho(offset.x, offset.x + SCREEN_WIDTH, offset.y, offset.y + SCREEN_HEIGHT, 1, -1);
+				glMatrixMode(GL_MODELVIEW);
+			}
+		};
 		
-		Vector2f viewOffset = new Vector2f();
-		
-		while (!Display.isCloseRequested()) {
-			
-			// Move screen based on arrow keys
-			updateViewOffset(arrowKeysPressed, viewOffset);
-			
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-			glClearColor(0.2F, 0.2F, 0.2F, 0F);
-			
-			// Set the viewpoint
-			glMatrixMode(GL_PROJECTION);
-			glLoadIdentity();
-			glOrtho(viewOffset.x, viewOffset.x + SCREEN_WIDTH, viewOffset.y, viewOffset.y + SCREEN_HEIGHT, 1, -1);
-			glMatrixMode(GL_MODELVIEW);
-			glLoadIdentity();
-			
-			// Update
-			DisplayEventHandler.update(getDelta());
-			
-			Display.update();
-			Display.sync(FRAMES_PER_SECOND); 
-		}
-		
-		// Cleanup
-		Display.destroy();
-		
-	}
-	
-	private double getDelta() {
-		double delta = System.currentTimeMillis() - lastFrameTime;
-		lastFrameTime = System.currentTimeMillis();
-		return delta;
+		KeyboardEventHandler.addListener(mKeyboardListener);
+		DisplayEventHandler.addListener(mDisplayListener);
 	}
 	
 	private void updateViewOffset(boolean[] directions, Vector2f offset) {
@@ -142,6 +122,20 @@ public class MainDisplay {
 				offset.x = (float) (BOARD_WIDTH - SCREEN_WIDTH);
 			}
 		}
+	}
+
+	@Override
+	public String getTitle() {
+		return "Main Game";
+	}
+
+	@Override
+	public void cleanup() {
+		// Tell our associated objects to cleanup
+		mController.cleanup();
+		// We just need to remove listeners
+		KeyboardEventHandler.removeListener(mKeyboardListener);
+		DisplayEventHandler.removeListener(mDisplayListener);
 	}
 	
 }

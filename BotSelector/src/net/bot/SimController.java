@@ -11,6 +11,7 @@ import net.bot.event.handler.DisplayEventHandler;
 import net.bot.event.handler.EntityEventHandler;
 import net.bot.event.listener.IDisplayEventListener;
 import net.bot.event.listener.IEntityEventListener;
+import net.bot.gui.GameScreen;
 import net.bot.input.KeyboardInput;
 
 import org.lwjgl.util.vector.Vector2f;
@@ -20,17 +21,23 @@ public class SimController {
 	private SimRegister mRegister;
 	private List<EntityBot> botsToAdd;
 	
+	private IDisplayEventListener mDisplayListener;
+	private IEntityEventListener mEntityListener;
+	
 	public SimController() {
 		mRegister = new SimRegister();
 		botsToAdd = new ArrayList<EntityBot>();
-		DisplayEventHandler.addListener(new IDisplayEventListener() {
+		
+		// Create listeners
+		mDisplayListener = new IDisplayEventListener() {
 			@Override
 			public void onUpdate(double delta) {
 				updateEntities(delta);
-				drawEntities();
+				drawEntities();				
 			}
-		});
-		EntityEventHandler.addListener(new IEntityEventListener() {
+		};
+		mEntityListener = new IEntityEventListener() {
+			
 			@Override
 			public void onFoodDestroyed() {}
 			
@@ -44,7 +51,12 @@ public class SimController {
 			public void onBotCreated(EntityBot bot) {
 				botsToAdd.add(bot);
 			}
-		});
+		};
+		
+		// Add listeners to handlers
+		DisplayEventHandler.addListener(mDisplayListener);
+		EntityEventHandler.addListener(mEntityListener);
+		
 	}
 	
 	public void updateEntities(double delta) {
@@ -176,11 +188,12 @@ public class SimController {
 		}
 	}
 	
-	public static void main(String[] args) {
-		new SimController();
-		new KeyboardInput();
-		MainDisplay display = new MainDisplay();
-		display.run();
+	public void cleanup() {
+		// Clean up objects
+		mRegister.cleanup();
+		// Clean up event listeners
+		DisplayEventHandler.removeListener(mDisplayListener);
+		EntityEventHandler.removeListener(mEntityListener);
 	}
-
+	
 }
