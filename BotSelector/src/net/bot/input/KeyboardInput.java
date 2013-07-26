@@ -1,14 +1,10 @@
 package net.bot.input;
 
-import net.bot.event.handler.DisplayEventHandler;
 import net.bot.event.handler.KeyboardEventHandler;
-import net.bot.event.listener.IDisplayEventListener;
 
 import org.lwjgl.input.Keyboard;
 
 public class KeyboardInput {
-	
-	public KeyboardInput() {}
 	
 	public void pollKeyboard() {
 		// Iterate over keyboard events and handle them 
