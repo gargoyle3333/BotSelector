@@ -28,18 +28,3 @@ Implement bot attributes:
 	Cannibalism
 	Strength - forward
 	Agility - turning speed
-	
-	
-Thoughts:
-	Create fields based on specks
-	Create wells and hills based on specks/bots
-	
-	Source for above: http://www.thebigger.com/biology/the-living-world/what-are-taxonomic-hierarchy-categories/
-	
-Create different enums for different event types
-
-Theory for hunting bots (maybe as an initial solution which can be improved):
-	- Detect smaller bots within radius
-	- Calculate probability of hunting bot based on aggressiveness
-	- Follow probability 
-Accelerate bots towards other bots if hunting, decelerate if there is nothing
