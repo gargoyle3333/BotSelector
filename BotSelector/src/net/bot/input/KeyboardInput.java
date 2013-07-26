@@ -8,15 +8,7 @@ import org.lwjgl.input.Keyboard;
 
 public class KeyboardInput {
 	
-	public KeyboardInput() {
-		DisplayEventHandler.addListener(new IDisplayEventListener() {
-			@Override
-			public void onUpdate(double delta) {
-				// Ignore delta
-				pollKeyboard();
-			}
-		});
-	}
+	public KeyboardInput() {}
 	
 	public void pollKeyboard() {
 		// Iterate over keyboard events and handle them 

@@ -8,19 +8,37 @@ import net.bot.event.listener.IDisplayEventListener;
 public class DisplayEventHandler {
 
 	private static List<IDisplayEventListener> displayEventListeners = new ArrayList<IDisplayEventListener>();
-	
+	private static List<IDisplayEventListener> removeListeners = new ArrayList<IDisplayEventListener>();
+	private static List<IDisplayEventListener> addListeners = new ArrayList<IDisplayEventListener>();
+
 	public static void addListener(IDisplayEventListener listener) {
-		displayEventListeners.add(listener);
+		addListeners.add(listener);
 	}
 	
 	public static void removeListener(IDisplayEventListener listener) {
-		displayEventListeners.remove(listener);
+		removeListeners.add(listener);
 	}
 	
 	public static void update(double delta) {
+		addToListenerList();
 		for (IDisplayEventListener l : displayEventListeners) {
 			l.onUpdate(delta);
 		}
+		removeFromListenerList();
+	}
+	
+	private static void addToListenerList() {
+		for (IDisplayEventListener l : addListeners) {
+			displayEventListeners.add(l);
+		}
+		addListeners.clear();
+	}
+	
+	private static void removeFromListenerList() {
+		for (IDisplayEventListener l : removeListeners) {
+			displayEventListeners.remove(l);
+		}
+		removeListeners.clear();
 	}
 	
 }
