@@ -25,8 +25,8 @@ public class MouseInput {
 		
 		// Check for movement
 		// We can't rely on dX or dY here, as they won't listen to our sensitivity
-		float dX = lastX - Mouse.getX();
-		float dY = lastY - Mouse.getY();
+		float dX = Mouse.getX() - lastX;
+		float dY = Mouse.getY() - lastY;
 		if(Math.abs(dX) > MOUSE_SENSITIVITY ||
 				Math.abs(dY) > MOUSE_SENSITIVITY) {
 			lastX = Mouse.getX();
