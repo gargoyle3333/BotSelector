@@ -20,6 +20,7 @@ import net.bot.event.handler.DisplayEventHandler;
 import net.bot.event.handler.KeyboardEventHandler;
 import net.bot.event.listener.IKeyboardEventListener;
 import net.bot.input.KeyboardInput;
+import net.bot.input.MouseInput;
 
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
@@ -89,6 +90,7 @@ public class MasterScreen {
 		mCurrentScreen = new TitleScreen();
 		changeScreen(ScreenState.TITLE);
 		KeyboardInput keyboardInput = new KeyboardInput();
+		MouseInput mouseInput = new MouseInput();
 		
 		while (!Display.isCloseRequested()) {
 
@@ -97,6 +99,7 @@ public class MasterScreen {
 
 			// Update
 			keyboardInput.pollKeyboard();
+			mouseInput.pollMouse();
 			DisplayEventHandler.update(getDelta());
 
 			Display.update();

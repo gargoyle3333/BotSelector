@@ -8,8 +8,10 @@ import static org.lwjgl.opengl.GL11.glOrtho;
 
 import net.bot.event.handler.DisplayEventHandler;
 import net.bot.event.handler.KeyboardEventHandler;
+import net.bot.event.handler.MouseEventHandler;
 import net.bot.event.listener.IDisplayEventListener;
 import net.bot.event.listener.IKeyboardEventListener;
+import net.bot.event.listener.IMouseEventListener;
 import net.bot.input.KeyboardInput;
 
 import org.lwjgl.LWJGLException;
