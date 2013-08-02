@@ -3,7 +3,6 @@ package net.bot.event.handler;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.bot.event.listener.IKeyboardEventListener;
 import net.bot.event.listener.IMouseEventListener;
 
 public class MouseEventHandler {

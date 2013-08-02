@@ -1,18 +1,15 @@
 package net.bot.gui;
 
 import net.bot.SimController;
-import net.bot.SimRegister;
 import net.bot.event.handler.DisplayEventHandler;
 import net.bot.event.handler.KeyboardEventHandler;
 import net.bot.event.listener.IDisplayEventListener;
 import net.bot.event.listener.IKeyboardEventListener;
+import net.bot.gui.MasterScreen.ScreenState;
 
 import static net.bot.util.MainDisplayConstants.*;
 
-import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
-import org.lwjgl.opengl.Display;
-import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.util.vector.Vector2f;
 
 import static org.lwjgl.opengl.GL11.*;
@@ -20,8 +17,6 @@ import static org.lwjgl.opengl.GL11.*;
 public class GameScreen extends BaseScreen {
 	
 	private boolean[] arrowKeysPressed;
-	
-	private SimController mController;
 	
 	// Listeners
 	private IKeyboardEventListener mKeyboardListener;
@@ -40,7 +35,7 @@ public class GameScreen extends BaseScreen {
 		arrowKeysPressed = new boolean[4];
 		final Vector2f offset = new Vector2f(0,0);
 		
-		mController = new SimController();
+		new SimController();
 		
 		mKeyboardListener = new IKeyboardEventListener() {
 			
@@ -59,6 +54,8 @@ public class GameScreen extends BaseScreen {
 				case Keyboard.KEY_RIGHT: 
 					arrowKeysPressed[3] = true;
 					break;
+				case Keyboard.KEY_ESCAPE:
+					mMasterScreen.changeScreen(ScreenState.TITLE);
 				default:
 					break;
 				}				

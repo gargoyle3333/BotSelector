@@ -11,8 +11,6 @@ import net.bot.event.handler.DisplayEventHandler;
 import net.bot.event.handler.EntityEventHandler;
 import net.bot.event.listener.IDisplayEventListener;
 import net.bot.event.listener.IEntityEventListener;
-import net.bot.gui.GameScreen;
-import net.bot.input.KeyboardInput;
 
 import org.lwjgl.util.vector.Vector2f;
 

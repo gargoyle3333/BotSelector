@@ -5,7 +5,6 @@ import static org.lwjgl.opengl.GL11.GL_PROJECTION;
 import static org.lwjgl.opengl.GL11.glLoadIdentity;
 import static org.lwjgl.opengl.GL11.glMatrixMode;
 import static org.lwjgl.opengl.GL11.glOrtho;
-import net.bot.event.listener.IDisplayEventListener;
 import net.bot.gui.MasterScreen.ScreenState;
 import net.bot.gui.components.IButtonHandler;
 import net.bot.gui.components.RectangleButton;
@@ -14,8 +13,6 @@ import org.lwjgl.util.Color;
 import org.lwjgl.util.vector.Vector2f;
 
 public class TitleScreen extends BaseScreen {
-	
-	private IDisplayEventListener mDisplayListener;
 	
 	public TitleScreen(MasterScreen master) {
 		super(master);

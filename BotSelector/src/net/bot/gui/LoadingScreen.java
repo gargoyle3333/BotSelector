@@ -5,7 +5,6 @@ import static org.lwjgl.opengl.GL11.GL_PROJECTION;
 import static org.lwjgl.opengl.GL11.glLoadIdentity;
 import static org.lwjgl.opengl.GL11.glMatrixMode;
 import static org.lwjgl.opengl.GL11.glOrtho;
-import net.bot.event.listener.IDisplayEventListener;
 
 public class LoadingScreen extends BaseScreen {
 	
@@ -26,8 +25,4 @@ public class LoadingScreen extends BaseScreen {
 		return "Loading Screen";
 	}
 
-//	@Override
-//	public void cleanup() {
-//	}
-	
 }
