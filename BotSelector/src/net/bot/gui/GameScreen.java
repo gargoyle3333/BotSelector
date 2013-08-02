@@ -130,13 +130,4 @@ public class GameScreen extends BaseScreen {
 		return "Main Game";
 	}
 
-//	@Override
-//	public void cleanup() {
-//		// Tell our associated objects to cleanup
-//		mController.cleanup();
-//		// We just need to remove listeners
-//		KeyboardEventHandler.removeListener(mKeyboardListener);
-//		DisplayEventHandler.removeListener(mDisplayListener);
-//	}
-	
 }
