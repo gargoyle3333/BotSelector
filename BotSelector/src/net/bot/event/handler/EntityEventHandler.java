@@ -22,6 +22,10 @@ public class EntityEventHandler {
 		removeListeners.add(listener);
 	}
 
+	public static void clearListeners() {
+		removeListeners.addAll(entityEventListeners);
+	}
+	
 	public static void botCreated(EntityBot bot) {
 		addToListenerList();
 		for (IEntityEventListener l : entityEventListeners) {

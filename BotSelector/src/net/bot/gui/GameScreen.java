@@ -17,7 +17,7 @@ import org.lwjgl.util.vector.Vector2f;
 
 import static org.lwjgl.opengl.GL11.*;
 
-public class GameScreen implements IScreen {
+public class GameScreen extends BaseScreen {
 	
 	private boolean[] arrowKeysPressed;
 	
@@ -27,7 +27,8 @@ public class GameScreen implements IScreen {
 	private IKeyboardEventListener mKeyboardListener;
 	private IDisplayEventListener mDisplayListener;
 	
-	public GameScreen() {
+	public GameScreen(MasterScreen master) {
+		super(master);
 		// Set up viewpoint
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
@@ -129,13 +130,13 @@ public class GameScreen implements IScreen {
 		return "Main Game";
 	}
 
-	@Override
-	public void cleanup() {
-		// Tell our associated objects to cleanup
-		mController.cleanup();
-		// We just need to remove listeners
-		KeyboardEventHandler.removeListener(mKeyboardListener);
-		DisplayEventHandler.removeListener(mDisplayListener);
-	}
+//	@Override
+//	public void cleanup() {
+//		// Tell our associated objects to cleanup
+//		mController.cleanup();
+//		// We just need to remove listeners
+//		KeyboardEventHandler.removeListener(mKeyboardListener);
+//		DisplayEventHandler.removeListener(mDisplayListener);
+//	}
 	
 }

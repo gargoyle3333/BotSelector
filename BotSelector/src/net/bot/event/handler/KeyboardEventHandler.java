@@ -20,6 +20,10 @@ public class KeyboardEventHandler {
 		removeListeners.add(listener);
 	}
 
+	public static void clearListeners() {
+		removeListeners.addAll(keyboardEventListeners);
+	}
+	
 	public static void keyPressed(int key) {
 		addToListenerList();
 		for (IKeyboardEventListener l : keyboardEventListeners) {

@@ -7,10 +7,10 @@ import static org.lwjgl.opengl.GL11.glMatrixMode;
 import static org.lwjgl.opengl.GL11.glOrtho;
 import net.bot.event.listener.IDisplayEventListener;
 
-public class LoadingScreen implements IScreen {
+public class LoadingScreen extends BaseScreen {
 	
-	public LoadingScreen() {
-		
+	public LoadingScreen(MasterScreen master) {
+		super(master);
 		// Set up viewpoint
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
@@ -26,8 +26,8 @@ public class LoadingScreen implements IScreen {
 		return "Loading Screen";
 	}
 
-	@Override
-	public void cleanup() {
-	}
+//	@Override
+//	public void cleanup() {
+//	}
 	
 }

@@ -19,6 +19,10 @@ public class DisplayEventHandler {
 		removeListeners.add(listener);
 	}
 	
+	public static void clearListeners() {
+		removeListeners.addAll(displayEventListeners);
+	}
+	
 	public static void update(double delta) {
 		addToListenerList();
 		for (IDisplayEventListener l : displayEventListeners) {

@@ -20,12 +20,12 @@ import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
 
-public class TitleScreen implements IScreen {
+public class TitleScreen extends BaseScreen {
 	
 	private IDisplayEventListener mDisplayListener;
 	
-	public TitleScreen() {
-		
+	public TitleScreen(MasterScreen master) {
+		super(master);
 		// Set up viewpoint
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
@@ -58,10 +58,10 @@ public class TitleScreen implements IScreen {
 		return "Title Screen";
 	}
 
-	@Override
-	public void cleanup() {
-		// Garbage collectors handles dead objects
-		DisplayEventHandler.removeListener(mDisplayListener);
-	}
+//	@Override
+//	public void cleanup() {
+//		// Garbage collectors handles dead objects
+//		DisplayEventHandler.removeListener(mDisplayListener);
+//	}
 	
 }

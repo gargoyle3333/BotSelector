@@ -20,6 +20,10 @@ public class MouseEventHandler {
 		removeListeners.add(listener);
 	}
 	
+	public static void clearListeners() {
+		removeListeners.addAll(mouseEventListeners);
+	}
+	
 	private static void addToListenerList() {
 		for (IMouseEventListener l : addListeners) {
 			mouseEventListeners.add(l);

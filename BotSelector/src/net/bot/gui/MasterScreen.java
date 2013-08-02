@@ -13,11 +13,14 @@ import static org.lwjgl.opengl.GL11.glLoadIdentity;
 import static org.lwjgl.opengl.GL11.glMatrixMode;
 import static org.lwjgl.opengl.GL11.glOrtho;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 
 import net.bot.event.handler.DisplayEventHandler;
+import net.bot.event.handler.EntityEventHandler;
 import net.bot.event.handler.KeyboardEventHandler;
+import net.bot.event.handler.MouseEventHandler;
 import net.bot.event.listener.IKeyboardEventListener;
 import net.bot.input.KeyboardInput;
 import net.bot.input.MouseInput;
@@ -38,7 +41,7 @@ public class MasterScreen {
 	private Map<ScreenState, Class<?>> screenMap;
 
 	private ScreenState mScreenState = ScreenState.LOADING;
-	private IScreen mCurrentScreen;
+	private BaseScreen mCurrentScreen;
 	private double lastFrameTime = System.currentTimeMillis();
 
 	public MasterScreen() {
@@ -87,7 +90,7 @@ public class MasterScreen {
 	private void run() {
 
 		// We're going to start in the title screen.
-		mCurrentScreen = new TitleScreen();
+//		mCurrentScreen = new TitleScreen(this);
 		changeScreen(ScreenState.TITLE);
 		KeyboardInput keyboardInput = new KeyboardInput();
 		MouseInput mouseInput = new MouseInput();
@@ -112,9 +115,16 @@ public class MasterScreen {
 		if(mScreenState == ss) { 
 			return;
 		}
-		mCurrentScreen.cleanup();
+//		mCurrentScreen.cleanup();
+		clearListeners();
 		try {
-			mCurrentScreen = (IScreen) screenMap.get(ss).newInstance();
+			try {
+				mCurrentScreen = (BaseScreen) screenMap.get(ss).getConstructor(MasterScreen.class).newInstance(this);
+			} catch (IllegalArgumentException | InvocationTargetException
+					| NoSuchMethodException | SecurityException e) {
+				e.printStackTrace();
+				System.exit(1);
+			}
 			mScreenState = ss;
 		} catch (InstantiationException | IllegalAccessException e) {
 			e.printStackTrace();
@@ -127,6 +137,13 @@ public class MasterScreen {
 		double delta = System.currentTimeMillis() - lastFrameTime;
 		lastFrameTime = System.currentTimeMillis();
 		return delta;
+	}
+	
+	private void clearListeners() {
+		DisplayEventHandler.clearListeners();
+		EntityEventHandler.clearListeners();
+		KeyboardEventHandler.clearListeners();
+		MouseEventHandler.clearListeners();
 	}
 
 	public static void main(String[] args) {
