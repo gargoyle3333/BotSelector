@@ -6,6 +6,7 @@ import org.lwjgl.util.Color;
 import org.lwjgl.util.vector.Vector2f;
 
 import net.bot.disease.Disease;
+import net.bot.event.handler.EntityEventHandler;
 
 public class EntityDiseasedBot extends EntityBot { //Decorator
 	
@@ -23,6 +24,10 @@ public class EntityDiseasedBot extends EntityBot { //Decorator
 	@Override
 	public void update() {
 		bot.update();
+		if (diseaseList.size() < 1) {
+			EntityEventHandler.botDestroyed(this);
+			EntityEventHandler.botCreated(bot);
+		}
 		for (Disease d : diseaseList) {
 			d.update();
 			if (d.checkFatality()) {
@@ -35,21 +40,6 @@ public class EntityDiseasedBot extends EntityBot { //Decorator
 	public void addDisease(Disease disease) {
 		diseaseList.add(disease);
 	}
-	
-	
-	
-	//Tests to see if the diseased bot's diseaseList is empty and unwraps the object if it is
-	//Any neater way of doing this? Does it even work?
-	//Not being used at the moment - don't think it works as intended
-	/*
-	public static void testBotAndClean(EntityBot diseasedBot) {
-		boolean isClean = ((EntityDiseasedBot) diseasedBot).diseaseList.isEmpty();
-		if (isClean) {
-			diseasedBot.setDiseased(false);
-			diseasedBot = ((EntityDiseasedBot) diseasedBot).bot;
-		}
-	}
-	*/
 	
 	public boolean isClean() {
 		return diseaseList.isEmpty();

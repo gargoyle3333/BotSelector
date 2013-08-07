@@ -9,6 +9,6 @@ public interface IEntityEventListener {
 	void onBotDestroyed(EntityBot bot);
 	
 	void onFoodCreated(EntityFoodSpeck speck);
-	void onFoodDestroyed();
+	void onFoodDestroyed(EntityFoodSpeck speck);
 	
 }

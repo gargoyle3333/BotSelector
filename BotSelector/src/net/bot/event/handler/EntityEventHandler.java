@@ -34,9 +34,9 @@ public class EntityEventHandler {
 			l.onFoodCreated(speck);
 		}
 	}
-	public static void foodDestroyed() {
+	public static void foodDestroyed(EntityFoodSpeck speck) {
 		for (IEntityEventListener l : entityEventListeners) {
-			l.onFoodDestroyed();
+			l.onFoodDestroyed(speck);
 		}
 	}
 	

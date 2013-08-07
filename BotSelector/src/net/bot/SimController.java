@@ -1,7 +1,5 @@
 package net.bot;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import net.bot.entities.Entity;
@@ -19,11 +17,9 @@ import org.lwjgl.util.vector.Vector2f;
 public class SimController {
 	
 	private SimRegister mRegister;
-	private List<EntityBot> botsToAdd;
 	
 	public SimController() {
 		mRegister = new SimRegister();
-		botsToAdd = new ArrayList<EntityBot>();
 		DisplayEventHandler.addListener(new IDisplayEventListener() {
 			@Override
 			public void onUpdate(double delta) {
@@ -31,62 +27,24 @@ public class SimController {
 				drawEntities();
 			}
 		});
-		EntityEventHandler.addListener(new IEntityEventListener() {
-			@Override
-			public void onFoodDestroyed() {}
-			
-			@Override
-			public void onFoodCreated(EntityFoodSpeck speck) {}
-			
-			@Override
-			public void onBotDestroyed(EntityBot bot) {}
-			
-			@Override
-			public void onBotCreated(EntityBot bot) {
-				botsToAdd.add(bot);
-			}
-		});
 	}
 	
 	public void updateEntities(double delta) {
 		
 		// Check for age in food specks
-		Iterator<EntityFoodSpeck> foodEntityIterator = mRegister.getFoodEntityList().iterator();
-		while (foodEntityIterator.hasNext()) {
-			foodEntityIterator.next().update();
+		for (EntityFoodSpeck speck : mRegister.getFoodEntityList()) { 
+			speck.update();
 		}
 		
 		List<EntityBot> bots = mRegister.getBotEntityList();
 		
-		Iterator<EntityBot> botEntityIterator = mRegister.getBotEntityList().iterator();
-		// Update
-		while (botEntityIterator.hasNext()) {
-			EntityBot nextBot = botEntityIterator.next();
-			nextBot.update();
-			
-			//Sort out diseases
-			if (!nextBot.isDiseased())
-			{
-				botEntityIterator.remove();
-				botsToAdd.add(new EntityDiseasedBot(nextBot));
-			}
-			else
-			{
-				EntityDiseasedBot nextDiseasedBot = (EntityDiseasedBot) nextBot;
-				if (nextDiseasedBot.isClean()) {
-					botEntityIterator.remove();
-					botsToAdd.add(nextDiseasedBot.getBot());
-				}
+		for (EntityBot bot : bots) {
+			bot.update();
+			if (!bot.isDiseased()) {
+				EntityEventHandler.botDestroyed(bot);
+				EntityEventHandler.botCreated(new EntityDiseasedBot(bot));
 			}
 		}
-		
-		//This is the code that didn't work
-/*		for (EntityBot bot : bots) {
-			if (!bot.isDiseased()) {
-				bot = new EntityDiseasedBot(bot);
-			}
-			bot.update();
-		}*/
 		
 		// Sort out collisions
 		for (int i = 0; i < bots.size(); i++) {
@@ -106,35 +64,6 @@ public class SimController {
 				bot.addForce(speck);
 			}
 		}
-		
-		// Remove dead specks
-		int specksDead = 0;
-		foodEntityIterator = mRegister.getFoodEntityList().iterator();
-		while (foodEntityIterator.hasNext()) {
-			Entity entity = foodEntityIterator.next();
-			if(!entity.isAlive()) {
-				specksDead++;
-				foodEntityIterator.remove();
-			}
-		}
-		// Send events. Couldn't be done before as event causes modification to list.
-		for (int i = 0; i < specksDead; i++) {
-			EntityEventHandler.foodDestroyed();
-		}
-		
-		// Remove dead bots
-		Iterator<EntityBot> botIterator = bots.iterator();
-		while (botIterator.hasNext()) {
-			if (!botIterator.next().isAlive()) {
-				botIterator.remove();
-			}
-		}
-		
-		// Add new bots
-		for (EntityBot bot : botsToAdd) {
-			bots.add(bot);
-		}
-		botsToAdd.clear();
 		
 	}
 	
@@ -167,20 +96,7 @@ public class SimController {
 				entity.setVelocity(newEntity);
 				
 			} else if (bot.getSize() < entity.getSize()) {
-				if (entity instanceof EntityBot) {
-					if (entity.getColor().equals(bot.getColor())) {
-						
-					} else {
-						((EntityBot)entity).consume(bot);
-					}
-				} else {
-					if (compare.x < entity.getSize()) {
-						// Left or right face
-						bot.getVelocity().x *= -1;
-					} else {
-						bot.getVelocity().y *= -1;
-					}
-				}
+				entity.consume(bot);
 			} else if (bot.getColor().equals(entity.getColor())) {
 				// Do nothing :-)
 				return;
@@ -191,15 +107,11 @@ public class SimController {
 	}
 
 	public void drawEntities() {
-		Iterator<EntityBot> botEntityIterator = mRegister.getBotEntityList().iterator();
-		while (botEntityIterator.hasNext()) {
-			// Draw
-			botEntityIterator.next().draw();
+		for (EntityBot bot : mRegister.getBotEntityList()) {
+			bot.draw();
 		}
-		
-		Iterator<EntityFoodSpeck> foodEntityIterator = mRegister.getFoodEntityList().iterator();
-		while (foodEntityIterator.hasNext()) {
-			foodEntityIterator.next().draw();
+		for (EntityFoodSpeck speck : mRegister.getFoodEntityList()) {
+			speck.draw();
 		}
 	}
 	

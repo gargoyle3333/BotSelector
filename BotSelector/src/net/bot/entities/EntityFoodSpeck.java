@@ -3,6 +3,8 @@ package net.bot.entities;
 import static net.bot.util.RandomUtil.rand;
 
 import static org.lwjgl.opengl.GL11.*;
+import net.bot.event.handler.EntityEventHandler;
+
 import org.lwjgl.util.vector.Vector2f;
 
 public class EntityFoodSpeck extends Entity {
@@ -29,6 +31,7 @@ public class EntityFoodSpeck extends Entity {
 	public void update() {
 		if (++mFramesAlive == mFramesBeforeDeath) {
 			mState = State.STARVED;
+			EntityEventHandler.foodDestroyed(this);
 		}
 	}
 
@@ -50,6 +53,11 @@ public class EntityFoodSpeck extends Entity {
 		
 		glPopMatrix();
 		
+	}
+
+	@Override
+	public void consume(Entity entity) {
+		// Do nothing
 	}
 
 }

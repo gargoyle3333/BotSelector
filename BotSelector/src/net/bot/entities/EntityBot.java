@@ -88,6 +88,16 @@ public class EntityBot extends Entity {
 		
 		mSize = foodToSize(mFoodLevel);
 		mResolvedForce = new Vector2f(0,0);
+		
+		if (!isDiseased) {
+			EntityEventHandler.botDestroyed(this);
+			EntityEventHandler.botCreated(new EntityDiseasedBot(this));
+		} 
+		
+		if (!isAlive()) {
+			EntityEventHandler.botDestroyed(this);
+		}
+		
 	}
 
 
@@ -123,6 +133,7 @@ public class EntityBot extends Entity {
 		
 	}
 	
+	@Override
 	public void consume(Entity food) {
 		if (food.getState() != State.CONSUMED) {
 			food.setState(State.CONSUMED); // Set food to eaten
