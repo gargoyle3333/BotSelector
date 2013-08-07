@@ -61,7 +61,8 @@ public abstract class Entity {
 	public enum State {
 		ALIVE,
 		STARVED,
-		CONSUMED
+		CONSUMED,
+		FATAL
 	}
 	
 	public boolean isAlive() {

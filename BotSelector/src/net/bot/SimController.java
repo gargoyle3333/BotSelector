@@ -6,6 +6,7 @@ import java.util.List;
 
 import net.bot.entities.Entity;
 import net.bot.entities.EntityBot;
+import net.bot.entities.EntityDiseasedBot;
 import net.bot.entities.EntityFoodSpeck;
 import net.bot.event.handler.DisplayEventHandler;
 import net.bot.event.handler.EntityEventHandler;
@@ -56,10 +57,36 @@ public class SimController {
 		}
 		
 		List<EntityBot> bots = mRegister.getBotEntityList();
+		
+		Iterator<EntityBot> botEntityIterator = mRegister.getBotEntityList().iterator();
 		// Update
-		for (EntityBot bot : bots) {
-			bot.update();
+		while (botEntityIterator.hasNext()) {
+			EntityBot nextBot = botEntityIterator.next();
+			nextBot.update();
+			
+			//Sort out diseases
+			if (!nextBot.isDiseased())
+			{
+				botEntityIterator.remove();
+				botsToAdd.add(new EntityDiseasedBot(nextBot));
+			}
+			else
+			{
+				EntityDiseasedBot nextDiseasedBot = (EntityDiseasedBot) nextBot;
+				if (nextDiseasedBot.isClean()) {
+					botEntityIterator.remove();
+					botsToAdd.add(nextDiseasedBot.getBot());
+				}
+			}
 		}
+		
+		//This is the code that didn't work
+/*		for (EntityBot bot : bots) {
+			if (!bot.isDiseased()) {
+				bot = new EntityDiseasedBot(bot);
+			}
+			bot.update();
+		}*/
 		
 		// Sort out collisions
 		for (int i = 0; i < bots.size(); i++) {

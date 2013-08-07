@@ -22,6 +22,8 @@ public class EntityBot extends Entity {
 	
 	private static final float MAXIMUM_FORCE_DISTANCE = 0.3F;
 	
+	private boolean isDiseased;
+	
 	public EntityBot() {
 		super();
 		mColor = new Color(rand.nextInt(256), rand.nextInt(256), rand.nextInt(256));
@@ -38,6 +40,8 @@ public class EntityBot extends Entity {
 		mSize = foodToSize(mFoodLevel);
 		mResolvedForce = new Vector2f(0,0);
 		
+		isDiseased = false;
+		
 	}
 	
 	public EntityBot(Color color, Vector2f position, Vector2f velocity, float foodLevel) {
@@ -48,6 +52,8 @@ public class EntityBot extends Entity {
 		mFoodLevel = foodLevel;
 		mSize = foodToSize(foodLevel);
 		mResolvedForce = new Vector2f(0,0);
+		
+		isDiseased = false;
 	}
 
 	@Override
@@ -200,4 +206,11 @@ public class EntityBot extends Entity {
 		Vector2f.add(mResolvedForce, resolved, mResolvedForce);
 	}
 	
+	public boolean isDiseased() {
+		return isDiseased;
+	}
+	
+	public void setDiseased(boolean isDiseased) {
+		this.isDiseased = isDiseased;
+	}
 }
