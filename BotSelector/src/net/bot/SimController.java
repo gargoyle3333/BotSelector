@@ -9,7 +9,6 @@ import net.bot.entities.EntityFoodSpeck;
 import net.bot.event.handler.DisplayEventHandler;
 import net.bot.event.handler.EntityEventHandler;
 import net.bot.event.listener.IDisplayEventListener;
-import net.bot.event.listener.IEntityEventListener;
 import net.bot.input.KeyboardInput;
 
 import org.lwjgl.util.vector.Vector2f;
@@ -38,17 +37,18 @@ public class SimController {
 		
 		List<EntityBot> bots = mRegister.getBotEntityList();
 		
-		for (EntityBot bot : bots) {
-			bot.update();
-			if (!bot.isDiseased()) {
-				EntityEventHandler.botDestroyed(bot);
-				EntityEventHandler.botCreated(new EntityDiseasedBot(bot));
-			}
-		}
-		
 		// Sort out collisions
 		for (int i = 0; i < bots.size(); i++) {
 			EntityBot bot = bots.get(i);
+			bot.update();
+			
+			// TODO remove after disease testing
+			if (!bot.isDiseased()) {
+				EntityEventHandler.botDestroyed(bot);
+				EntityBot temp = new EntityDiseasedBot(bot);
+				EntityEventHandler.botCreated(temp);
+				bot = temp;
+			}
 			for (int j = 0; j < bots.size(); j++) {
 				if (j > i) {
 					collideOrConsume(bot, bots.get(j));
@@ -95,14 +95,21 @@ public class SimController {
 				bot.setVelocity(newBot);
 				entity.setVelocity(newEntity);
 				
+			} else if (bot.getColor().equals(entity.getColor())) {
+				return;
 			} else if (bot.getSize() < entity.getSize()) {
 				entity.consume(bot);
-			} else if (bot.getColor().equals(entity.getColor())) {
-				// Do nothing :-)
-				return;
-			} else {
+			} else if (bot.getSize() > entity.getSize()) {
 				bot.consume(entity);
 			}
+//			else if (bot.getSize() < entity.getSize()) {
+//				entity.consume(bot);
+//			} else if (bot.getColor().equals(entity.getColor())) {
+//				// Do nothing :-)
+//				return;
+//			} else {
+//				bot.consume(entity);
+//			}
 		}
 	}
 

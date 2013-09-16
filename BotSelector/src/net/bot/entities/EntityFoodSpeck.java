@@ -5,6 +5,7 @@ import static net.bot.util.RandomUtil.rand;
 import static org.lwjgl.opengl.GL11.*;
 import net.bot.event.handler.EntityEventHandler;
 
+import org.lwjgl.util.Color;
 import org.lwjgl.util.vector.Vector2f;
 
 public class EntityFoodSpeck extends Entity {
@@ -20,19 +21,22 @@ public class EntityFoodSpeck extends Entity {
 	
 	public EntityFoodSpeck() {
 		super();
-		mSize = (rand.nextInt(MAX_FOOD_SIZE - MIN_FOOD_SIZE) + MIN_FOOD_SIZE) / SIZE_MULTIPLIER;
+		setSize((rand.nextInt(MAX_FOOD_SIZE - MIN_FOOD_SIZE) + MIN_FOOD_SIZE) / SIZE_MULTIPLIER);
 		mFramesBeforeDeath = rand.nextInt(MAX_FRAMES_ALIVE - MIN_FRAMES_ALIVE) + MIN_FRAMES_ALIVE;
-		mPosition = new Vector2f(rand.nextFloat(), rand.nextFloat());
-		mVelocity = new Vector2f(0,0); 
-		mFoodLevel = mSize * 10;
+		setPosition(new Vector2f(rand.nextFloat(), rand.nextFloat()));
+		setVelocity(new Vector2f(0,0));
+		setFoodLevel(getSize() * 10);
 	}
 	
 	@Override
 	public void update() {
-		if (++mFramesAlive == mFramesBeforeDeath) {
-			mState = State.STARVED;
+		if (getState() == State.CONSUMED) {
 			EntityEventHandler.foodDestroyed(this);
 		}
+//		if (++mFramesAlive == mFramesBeforeDeath) {
+//			mState = State.STARVED;
+//			EntityEventHandler.foodDestroyed(this);
+//		}
 	}
 
 	@Override
@@ -40,11 +44,13 @@ public class EntityFoodSpeck extends Entity {
 		
 		glPushMatrix();
 		
-		glColor3f(mColor.getRed()/256F, mColor.getGreen()/256F, mColor.getBlue()/256F);
-		glTranslatef(mPosition.x, mPosition.y, 0);
+		Color color = getColor();
+		Vector2f position = getPosition();
+		glColor3f(color.getRed()/256F, color.getGreen()/256F, color.getBlue()/256F);
+		glTranslatef(position.x, position.y, 0);
 		
 		glBegin(GL_QUADS);
-		float temp = mSize/2;
+		float temp = getSize()/2;
 		glVertex2f(temp, temp);
 		glVertex2f(temp, -temp);
 		glVertex2f(-temp, -temp);

@@ -31,7 +31,7 @@ public class EntityDiseasedBot extends EntityBot { //Decorator
 		for (Disease d : diseaseList) {
 			d.update();
 			if (d.checkFatality()) {
-				bot.mState = State.FATAL;
+				bot.setState(State.FATAL);
 			}
 		}
 //		testBotAndClean(this);

@@ -13,32 +13,36 @@ public class EntityBot extends Entity {
 	private static final float SPEED_MULTIPLIER = 1000F; // = 0.007 max, 0.002 min
 	private static final float MAX_SPEED = 0.003F;
 	
-	private static final int FRAMES_BEFORE_FOOD_DECREMENT = 60;
-	private static final float FOOD_DECREMENT = 0.005F;
+//	private static final int FRAMES_BEFORE_FOOD_DECREMENT = 60;
+//	private static final float FOOD_DECREMENT = 0.005F;
 	
 	private static final float OFFSPRING_PROPORTION = 0.3F;
 	private static final float OFFSPRING_MIN_FOOD = 0.2F;
 	private static final float OFFSPRING_MAX_FOOD = 50F;
 	
 	private static final float MAXIMUM_FORCE_DISTANCE = 0.3F;
+	private static final float G = 0.0003F;
+	
+	private Vector2f mResolvedForce;
 	
 	private boolean isDiseased;
 	
 	public EntityBot() {
 		super();
-		mColor = new Color(rand.nextInt(256), rand.nextInt(256), rand.nextInt(256));
-		mPosition = new Vector2f(rand.nextFloat(), rand.nextFloat());
+		setColor(new Color(rand.nextInt(256), rand.nextInt(256), rand.nextInt(256)));
+		setPosition(new Vector2f(rand.nextFloat(), rand.nextFloat()));
 		
 		// Any neater way to do this?
 		float xVel = (float) ((rand.nextInt(MAX_SPAWN_SPEED-MIN_SPAWN_SPEED) + MIN_SPAWN_SPEED)/SPEED_MULTIPLIER);
 		float yVel = (float) ((rand.nextInt(MAX_SPAWN_SPEED-MIN_SPAWN_SPEED) + MIN_SPAWN_SPEED)/SPEED_MULTIPLIER);
-		if (rand.nextFloat() >= 0.5) xVel *= -1;
-		if (rand.nextFloat() >= 0.5) yVel *= -1;
+		if (rand.nextBoolean()) xVel *= -1;
+		if (rand.nextBoolean()) yVel *= -1;
 		
-		mFoodLevel = rand.nextFloat();
-		mVelocity = new Vector2f(xVel, yVel);
-		mSize = foodToSize(mFoodLevel);
+		setFoodLevel(rand.nextFloat());
+		setVelocity(new Vector2f(xVel, yVel));
+		setSize(foodToSize(getFoodLevel()));
 		mResolvedForce = new Vector2f(0,0);
+//		mFramesAlive = 0;
 		
 		isDiseased = false;
 		
@@ -46,53 +50,49 @@ public class EntityBot extends Entity {
 	
 	public EntityBot(Color color, Vector2f position, Vector2f velocity, float foodLevel) {
 		super();
-		mColor = color;
-		mPosition = position;
-		mVelocity = velocity;
-		mFoodLevel = foodLevel;
-		mSize = foodToSize(foodLevel);
-		mResolvedForce = new Vector2f(0,0);
+		setColor(color);
+		setPosition(position);
+		setVelocity(velocity);
+		setFoodLevel(foodLevel);
+		setSize(foodToSize(foodLevel));
 		
+		mResolvedForce = new Vector2f(0,0);
 		isDiseased = false;
 	}
 
 	@Override
 	public void update() {
+		
 		// New position
-		Vector2f.add(mPosition, mVelocity, mPosition);
-		Vector2f.add(mVelocity, (Vector2f) mResolvedForce.scale((float) (1.0/mSize)), mVelocity);
+		Vector2f.add(getPosition(), getVelocity(), getPosition());
+		Vector2f.add(getVelocity(), (Vector2f) mResolvedForce.scale((float) (1.0/getSize())), getVelocity());
 		// Bounce off walls
-		if (mPosition.x + mVelocity.x < 0 || mPosition.x + mVelocity.x > 1) {
-			mVelocity.x *= -1;
+		if (getPosition().x + getVelocity().x < 0 || getPosition().x + getVelocity().x > 1) {
+			getVelocity().x *= -1;
 		}
-		if (mPosition.y + mVelocity.y < 0 || mPosition.y + mVelocity.y > 1) {
-			mVelocity.y *= -1;
+		if (getPosition().y + getVelocity().y < 0 || getPosition().y + getVelocity().y > 1) {
+			getVelocity().y *= -1;
 		}
 		// Too old?
-		if (++mFramesAlive % FRAMES_BEFORE_FOOD_DECREMENT == 0) {
-			mFoodLevel -= FOOD_DECREMENT;
-		}
-		if (mFoodLevel < 0) {
-			mState = State.STARVED;
-		}
+//		if (++mFramesAlive % FRAMES_BEFORE_FOOD_DECREMENT == 0) {
+//			getFoodLevel() -= FOOD_DECREMENT;
+//		}
+//		if (getFoodLevel() < 0) {
+//			mState = State.STARVED;
+//		}
 		
 		// The bigger the bot, the more likely it is to spawn offspring
-		if (rand.nextFloat() < chanceOfSpawn(mFoodLevel, OFFSPRING_MIN_FOOD, OFFSPRING_MAX_FOOD)) {
+		if (rand.nextFloat() < chanceOfSpawn(getFoodLevel(), OFFSPRING_MIN_FOOD, OFFSPRING_MAX_FOOD)) {
 			spawnClone();
 		}
 		
 		float l;
-		if ((l = mVelocity.length()) > MAX_SPEED) {
-			mVelocity.set((mVelocity.x/l)*MAX_SPEED, (mVelocity.y/l)*MAX_SPEED);
+		if ((l = getVelocity().length()) > MAX_SPEED) {
+			getVelocity().set((getVelocity().x/l)*MAX_SPEED, (getVelocity().y/l)*MAX_SPEED);
 		}
 		
-		mSize = foodToSize(mFoodLevel);
+		setSize(foodToSize(getFoodLevel()));
 		mResolvedForce = new Vector2f(0,0);
-		
-		if (!isDiseased) {
-			EntityEventHandler.botDestroyed(this);
-			EntityEventHandler.botCreated(new EntityDiseasedBot(this));
-		} 
 		
 		if (!isAlive()) {
 			EntityEventHandler.botDestroyed(this);
@@ -111,39 +111,40 @@ public class EntityBot extends Entity {
 		glPushMatrix();
 		
 		double angle = 0;
-		if (mVelocity.x == 0) {
-			angle = mVelocity.y < 0 ? 180 : 0;
-		} else if (mVelocity.x > 0) {
-			angle = 90 - Math.toDegrees(Math.atan(mVelocity.y / mVelocity.x));
+		if (getVelocity().x == 0) {
+			angle = getVelocity().y < 0 ? 180 : 0;
+		} else if (getVelocity().x > 0) {
+			angle = 90 - Math.toDegrees(Math.atan(getVelocity().y / getVelocity().x));
 		} else {
-			angle = -90 + Math.toDegrees(Math.atan(mVelocity.y / -mVelocity.x));
+			angle = -90 + Math.toDegrees(Math.atan(getVelocity().y / -getVelocity().x));
 		}
 		
-		glTranslatef(mPosition.x, mPosition.y, 0);
+		glTranslatef(getPosition().x, getPosition().y, 0);
 		glRotated(angle, 0D, 0D, -1D);
 		
+		
+		float size = getSize();
 		glBegin(GL_TRIANGLES);
-		glColor3f(mColor.getRed()/256F, mColor.getGreen()/256F, mColor.getBlue()/256F);
-		glVertex3f(0, mSize, 0);
-		glVertex3f(mSize, -mSize, 0);
-		glVertex3f(-mSize, -mSize, 0);
+		glColor3f(getColor().getRed()/256F, getColor().getGreen()/256F, getColor().getBlue()/256F);
+		glVertex3f(0, size, 0);
+		glVertex3f(size, -size, 0);
+		glVertex3f(-size, -size, 0);
 		glEnd();
 		
 		glPopMatrix();
 		
 	}
 	
-	@Override
 	public void consume(Entity food) {
 		if (food.getState() != State.CONSUMED) {
 			food.setState(State.CONSUMED); // Set food to eaten
-			mFoodLevel += food.getFoodLevel(); // Eat food
+			setFoodLevel(getFoodLevel() + food.getFoodLevel()); // Eat food
 			
 			// Update momentum using masses, instead of assuming same mass
-			mVelocity.scale(mSize);
+			getVelocity().scale(getSize());
 			food.getVelocity().scale(food.getSize());
-			Vector2f.add(mVelocity, food.getVelocity(), mVelocity);
-			mVelocity.scale((float) (1.0/(mSize + food.getSize())));
+			Vector2f.add(getVelocity(), food.getVelocity(), getVelocity());
+			getVelocity().scale((float) (1.0/(getSize() + food.getSize())));
 			
 		}
 	}
@@ -156,27 +157,27 @@ public class EntityBot extends Entity {
 	private void spawnClone() {
 		
 		// We need colour, position, velocity and food level.
-		float offspringFood = mFoodLevel * OFFSPRING_PROPORTION;
+		float offspringFood = getFoodLevel() * OFFSPRING_PROPORTION;
 		// Get a new velocity that's 3/4 to 5/4 times the parent velocity
 		Vector2f offspringVelocity = new Vector2f(
-				mVelocity.x * (rand.nextFloat() * 0.5f + 0.75f),
-				mVelocity.y * (rand.nextFloat() * 0.5f + 0.75f)
+				getVelocity().x * (rand.nextFloat() * 0.5f + 0.75f),
+				getVelocity().y * (rand.nextFloat() * 0.5f + 0.75f)
 				);
-		Vector2f offspringPosition = new Vector2f(mPosition.x, mPosition.y);
-		Color offspringColor = new Color(mColor.getRed(), mColor.getGreen(), mColor.getBlue());
+		Vector2f offspringPosition = new Vector2f(getPosition().x, getPosition().y);
+		Color offspringColor = new Color(getColor().getRed(), getColor().getGreen(), getColor().getBlue());
 		
 		// Alter parent's lost food
-		mFoodLevel -= offspringFood;
+		setFoodLevel(getFoodLevel() - offspringFood);
 		
 		// Now we have to alter the velocity of the parent.
 		// We use the equation v1 = u1 + (m2/m1)(u1-v2)
 		Vector2f v1 = new Vector2f();
 		float m1 = foodToSize(offspringFood);
-		float m2 = foodToSize(mFoodLevel);
+		float m2 = foodToSize(getFoodLevel());
 		
-		Vector2f.sub(mVelocity, offspringVelocity, v1); // u1-v2
+		Vector2f.sub(getVelocity(), offspringVelocity, v1); // u1-v2
 		v1.scale(m2/m1); //(m2/m1)(u1-v2)
-		Vector2f.add(mVelocity, v1, mVelocity);// + u1
+		Vector2f.add(getVelocity(), v1, getVelocity());// + u1
 		
 		int skipFrames = 30;
 		// Now move the offspring somewhere away from the parent.
@@ -197,21 +198,21 @@ public class EntityBot extends Entity {
 	public void addForce(Entity entity) {
 		// Check distance
 		Vector2f displacement = new Vector2f(
-				entity.getPosition().x - mPosition.x, 
-				entity.getPosition().y - mPosition.y);
+				entity.getPosition().x - getPosition().x, 
+				entity.getPosition().y - getPosition().y);
 		float length = displacement.length();
 		if (length > MAXIMUM_FORCE_DISTANCE) {
 			return;
 		}
 		
 		// Find magnitude of direction vector
-		double force = (G * (mSize * entity.getSize()))/(length*length*length);
+		double force = (G * (getSize() * entity.getSize()))/(length*length*length);
 		Vector2f resolved = new Vector2f(
 				(float)(force * displacement.x), 
 				(float)(force * displacement.y));
 		
 		// Run from larger entity or same species.
-		if (entity.getSize() > mSize || entity.getColor().equals(mColor)) {
+		if (entity.getSize() > getSize() || entity.getColor().equals(getColor())) {
 			resolved.negate();
 		}
 		Vector2f.add(mResolvedForce, resolved, mResolvedForce);

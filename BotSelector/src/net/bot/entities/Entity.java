@@ -6,16 +6,18 @@ import org.lwjgl.util.vector.Vector2f;
 public abstract class Entity {
 	
 	// Gravitational constant
-	protected static final double G = 0.00003;
+	private static final double G = 0.00003;
 	
-	protected State mState;
-	protected Color mColor;
-	protected Vector2f mPosition, mVelocity;
-	protected int mFramesAlive = 0;
-	protected float mSize, mFoodLevel;
+	private State mState;
+	private Color mColor;
+	private Vector2f mPosition, mVelocity;
+	private int mFramesAlive = 0;
+	private float mSize, mFoodLevel;
 	
-	protected Vector2f mResolvedForce;
-	
+	public void setFoodLevel(float foodLevel) {
+		this.mFoodLevel = foodLevel;
+	}
+
 	public Vector2f getPosition() {
 		return mPosition;
 	}
