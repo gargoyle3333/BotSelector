@@ -30,9 +30,9 @@ public class EntityFoodSpeck extends Entity {
 	
 	@Override
 	public void update() {
-		if (getState() == State.CONSUMED) {
-			EntityEventHandler.foodDestroyed(this);
-		}
+//		if (getState() == State.CONSUMED) {
+//			EntityEventHandler.foodDestroyed(this);
+//		}
 //		if (++mFramesAlive == mFramesBeforeDeath) {
 //			mState = State.STARVED;
 //			EntityEventHandler.foodDestroyed(this);

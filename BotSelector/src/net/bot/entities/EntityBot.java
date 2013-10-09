@@ -93,11 +93,6 @@ public class EntityBot extends Entity {
 		
 		setSize(foodToSize(getFoodLevel()));
 		mResolvedForce = new Vector2f(0,0);
-		
-		if (!isAlive()) {
-			EntityEventHandler.botDestroyed(this);
-		}
-		
 	}
 
 
