@@ -8,15 +8,17 @@ import org.lwjgl.util.vector.Vector2f;
 import net.bot.disease.Disease;
 import net.bot.event.handler.EntityEventHandler;
 
-public class EntityDiseasedBot extends EntityBot { //Decorator
+public class EntityDiseasedBot extends AbstractEntityBotDecorator { //Decorator
 	
-	private EntityBot bot;
+	private AbstractEntityBot bot;
 	
 	private ArrayList<Disease> diseaseList;
 	
-	public EntityDiseasedBot(EntityBot bot) {
+	public EntityDiseasedBot(AbstractEntityBot bot) {
+		System.out.println("Marker");
 		this.bot = bot;
-		bot.setDiseased(true);
+
+
 		diseaseList = new ArrayList<Disease>();
 		diseaseList.add(new Disease(true, 1, 1));
 	}
@@ -45,7 +47,7 @@ public class EntityDiseasedBot extends EntityBot { //Decorator
 		return diseaseList.isEmpty();
 	}
 	
-	public EntityBot getBot() {
+	public AbstractEntityBot getBot() {
 		return this.bot;
 	}
 	
@@ -66,12 +68,7 @@ public class EntityDiseasedBot extends EntityBot { //Decorator
 	
 	@Override
 	public boolean isDiseased() {
-		return bot.isDiseased();
-	}
-	
-	@Override
-	public void setDiseased(boolean isDiseased) {
-		bot.setDiseased(isDiseased);
+		return true;
 	}
 	
 	@Override

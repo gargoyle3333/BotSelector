@@ -3,6 +3,7 @@ package net.bot.event.handler;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.bot.entities.AbstractEntityBot;
 import net.bot.entities.EntityBot;
 import net.bot.entities.EntityFoodSpeck;
 import net.bot.event.listener.IEntityEventListener;
@@ -19,12 +20,12 @@ public class EntityEventHandler {
 		entityEventListeners.remove(entityEventListeners);
 	}
 
-	public static void botCreated(EntityBot bot) {
+	public static void botCreated(AbstractEntityBot bot) {
 		for (IEntityEventListener l : entityEventListeners) {
 			l.onBotCreated(bot);
 		}
 	}
-	public static void botDestroyed(EntityBot bot) {
+	public static void botDestroyed(AbstractEntityBot bot) {
 		for (IEntityEventListener l : entityEventListeners) {
 			l.onBotDestroyed(bot);
 		}

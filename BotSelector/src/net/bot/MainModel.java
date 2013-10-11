@@ -6,6 +6,7 @@ import static net.bot.util.SimRegisterConstants.INITIAL_BOT_ENTITIES;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.bot.entities.AbstractEntityBot;
 import net.bot.entities.Entity;
 import net.bot.entities.Entity.State;
 import net.bot.entities.EntityBot;
@@ -21,7 +22,7 @@ import org.lwjgl.util.vector.Vector2f;
 
 public class MainModel {
 	
-	private List<EntityBot> mBotEntityList, mBotsToAdd, mBotsToRemove;
+	private List<AbstractEntityBot> mBotEntityList, mBotsToAdd, mBotsToRemove;
 	private List<EntityFoodSpeck> mFoodEntityList, mFoodToAdd, mFoodToRemove;
 	
 	public MainModel() {
@@ -36,7 +37,7 @@ public class MainModel {
 		
 		// 
 		
-		mBotEntityList = new ArrayList<EntityBot>();
+		mBotEntityList = new ArrayList<AbstractEntityBot>();
 		for (int i = 0; i < INITIAL_BOT_ENTITIES; i++) {
 			mBotEntityList.add(new EntityBot());
 		}
@@ -46,8 +47,8 @@ public class MainModel {
 			mFoodEntityList.add(new EntityFoodSpeck());
 		}
 		
-		mBotsToAdd = new ArrayList<EntityBot>();
-		mBotsToRemove = new ArrayList<EntityBot>();
+		mBotsToAdd = new ArrayList<AbstractEntityBot>();
+		mBotsToRemove = new ArrayList<AbstractEntityBot>();
 
 		mFoodToAdd = new ArrayList<EntityFoodSpeck>();		
 		mFoodToRemove = new ArrayList<EntityFoodSpeck>();
@@ -61,11 +62,11 @@ public class MainModel {
 				mFoodEntityList.add(speck);
 			}
 			@Override
-			public void onBotDestroyed(EntityBot bot) {
+			public void onBotDestroyed(AbstractEntityBot bot) {
 				mBotEntityList.add(bot);
 			}
 			@Override
-			public void onBotCreated(EntityBot bot) {
+			public void onBotCreated(AbstractEntityBot bot) {
 				mBotEntityList.add(bot);
 			}
 		});
@@ -106,15 +107,15 @@ public class MainModel {
 		
 		// Sort out collisions
 		for (int i = 0; i < mBotEntityList.size(); i++) {
-			EntityBot bot = mBotEntityList.get(i);
+			AbstractEntityBot bot = mBotEntityList.get(i);
 			bot.update();
 			
 			// TODO remove after disease testing
-	/*		if (!bot.isDiseased()) {
+			if (!bot.isDiseased()) {
 				EntityDiseasedBot newBot = new EntityDiseasedBot(bot);
 				mBotsToAdd.add(newBot);
-				mBotsToRemove.remove(bot);
-			}*/
+				mBotsToRemove.add(bot);
+			}
 			for (int j = 0; j < mBotEntityList.size(); j++) {
 				if (j > i) {
 					collideOrConsume(bot, mBotEntityList.get(j));
@@ -131,7 +132,7 @@ public class MainModel {
 			}
 		}
 		
-		for (EntityBot bot : mBotEntityList) {
+		for (AbstractEntityBot bot : mBotEntityList) {
 			if (bot.getState() != State.ALIVE) {
 				mBotsToRemove.add(bot);
 			}
@@ -154,7 +155,7 @@ public class MainModel {
 		
 	}
 	
-	private void collideOrConsume(EntityBot bot, Entity entity) {
+	private void collideOrConsume(AbstractEntityBot bot, Entity entity) {
 		Vector2f compare = new Vector2f();
 		Vector2f.sub(bot.getPosition(), entity.getPosition(), compare);
 		if (compare.length() <= bot.getSize() + entity.getSize()) {
@@ -201,7 +202,7 @@ public class MainModel {
 	}
 
 	public void drawEntities() {
-		for (EntityBot bot : mBotEntityList) {
+		for (AbstractEntityBot bot : mBotEntityList) {
 			bot.draw();
 		}
 		for (EntityFoodSpeck speck : mFoodEntityList) {

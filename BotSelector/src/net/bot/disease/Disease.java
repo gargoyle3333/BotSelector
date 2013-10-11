@@ -4,7 +4,7 @@ import net.bot.util.RandomUtil;
 
 public class Disease {
 	
-	private final static int FATALITYNUMBER = 1500;
+	private final static int FATALITYNUMBER = 1000;
 	private boolean contagious;
 	private int fatalityLevel;
 	private double probabilityOfIncrease;

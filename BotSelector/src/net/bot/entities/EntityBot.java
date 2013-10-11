@@ -6,7 +6,7 @@ import static org.lwjgl.opengl.GL11.*;
 import org.lwjgl.util.Color;
 import org.lwjgl.util.vector.Vector2f;
 
-public class EntityBot extends Entity {
+public class EntityBot extends AbstractEntityBot {
 	
 	private static final int MAX_SPAWN_SPEED = 7;
 	private static final int MIN_SPAWN_SPEED = 2;
@@ -25,11 +25,9 @@ public class EntityBot extends Entity {
 	
 	private Vector2f mResolvedForce;
 	
-	private boolean isDiseased;
-	
 	public EntityBot() {
 		super();
-		setColor(new Color(rand.nextInt(256), rand.nextInt(256), rand.nextInt(256)));
+		this.setColor(new Color(rand.nextInt(256), rand.nextInt(256), rand.nextInt(256)));
 		setPosition(new Vector2f(rand.nextFloat(), rand.nextFloat()));
 		
 		// Any neater way to do this?
@@ -43,9 +41,6 @@ public class EntityBot extends Entity {
 		setSize(foodToSize(getFoodLevel()));
 		mResolvedForce = new Vector2f(0,0);
 //		mFramesAlive = 0;
-		
-		isDiseased = false;
-		
 	}
 	
 	public EntityBot(Color color, Vector2f position, Vector2f velocity, float foodLevel) {
@@ -57,7 +52,6 @@ public class EntityBot extends Entity {
 		setSize(foodToSize(foodLevel));
 		
 		mResolvedForce = new Vector2f(0,0);
-		isDiseased = false;
 	}
 
 	@Override
@@ -214,10 +208,6 @@ public class EntityBot extends Entity {
 	}
 	
 	public boolean isDiseased() {
-		return isDiseased;
-	}
-	
-	public void setDiseased(boolean isDiseased) {
-		this.isDiseased = isDiseased;
+		return false;
 	}
 }
