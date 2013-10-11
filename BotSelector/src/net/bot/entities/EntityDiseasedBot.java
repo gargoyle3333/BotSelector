@@ -15,10 +15,7 @@ public class EntityDiseasedBot extends AbstractEntityBotDecorator { //Decorator
 	private ArrayList<Disease> diseaseList;
 	
 	public EntityDiseasedBot(AbstractEntityBot bot) {
-		System.out.println("Marker");
 		this.bot = bot;
-
-
 		diseaseList = new ArrayList<Disease>();
 		diseaseList.add(new Disease(true, 1, 1));
 	}
