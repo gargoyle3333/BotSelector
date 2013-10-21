@@ -14,9 +14,13 @@ import net.bot.entities.EntityDiseasedBot;
 import net.bot.entities.EntityFoodSpeck;
 import net.bot.event.handler.DisplayEventHandler;
 import net.bot.event.handler.EntityEventHandler;
+import net.bot.event.handler.FoodSourceEventHandler;
 import net.bot.event.listener.IDisplayEventListener;
 import net.bot.event.listener.IEntityEventListener;
+import net.bot.event.listener.IFoodSourceEventListener;
+import net.bot.food.FoodSource;
 import net.bot.input.KeyboardInput;
+import net.bot.util.RandomUtil;
 
 import org.lwjgl.util.vector.Vector2f;
 
@@ -24,6 +28,7 @@ public class MainModel {
 	
 	private List<AbstractEntityBot> mBotEntityList, mBotsToAdd, mBotsToRemove;
 	private List<EntityFoodSpeck> mFoodEntityList, mFoodToAdd, mFoodToRemove;
+	private List<FoodSource> mFoodSourceList, mFoodSourceToAdd, mFoodSourceToRemove;
 	
 	public MainModel() {
 		
@@ -32,7 +37,10 @@ public class MainModel {
 			public void onUpdate(double delta) {
 				updateEntities(delta);
 				drawEntities();
+				updateFoodSources(delta);
+				drawFoodSources();
 			}
+			
 		});
 		
 		// 
@@ -68,6 +76,26 @@ public class MainModel {
 			@Override
 			public void onBotCreated(AbstractEntityBot bot) {
 				mBotEntityList.add(bot);
+			}
+		});
+			
+		mFoodSourceList = new ArrayList<FoodSource>();
+		for (int i = 0; i < 5; i++) {
+			mFoodSourceList.add(new FoodSource(0.1f, 20, RandomUtil.rand.nextFloat() * 15f));
+		}
+		
+		mFoodSourceToAdd = new ArrayList<FoodSource>();
+		mFoodSourceToRemove = new ArrayList<FoodSource>();
+		FoodSourceEventHandler.addListener(new IFoodSourceEventListener() {
+			
+			@Override
+			public void onFoodSourceDestroyed(FoodSource source) {
+				mFoodSourceToRemove.add(source);
+			}
+			
+			@Override
+			public void onFoodSourceCreated(FoodSource source) {
+				mFoodSourceToAdd.add(source);
 			}
 		});
 		
@@ -111,11 +139,11 @@ public class MainModel {
 			bot.update();
 			
 			// TODO remove after disease testing
-			if (!bot.isDiseased()) {
-				EntityDiseasedBot newBot = new EntityDiseasedBot(bot);
-				mBotsToAdd.add(newBot);
-				mBotsToRemove.add(bot);
-			}
+//			if (!bot.isDiseased()) {
+//				EntityDiseasedBot newBot = new EntityDiseasedBot(bot);
+//				mBotsToAdd.add(newBot);
+//				mBotsToRemove.add(bot);
+//			}
 			for (int j = 0; j < mBotEntityList.size(); j++) {
 				if (j > i) {
 					collideOrConsume(bot, mBotEntityList.get(j));
@@ -145,7 +173,7 @@ public class MainModel {
 		for (EntityFoodSpeck food : mFoodEntityList) {
 			if (food.getState() == State.CONSUMED) {
 				mFoodToRemove.add(food);
-				mFoodToAdd.add(new EntityFoodSpeck());
+//				mFoodToAdd.add(new EntityFoodSpeck());
 			}
 		}
 		mFoodEntityList.removeAll(mFoodToRemove);
@@ -153,6 +181,22 @@ public class MainModel {
 		mFoodEntityList.addAll(mFoodToAdd);
 		mFoodToAdd.clear();
 		
+	}
+	
+	private void updateFoodSources(double delta) {
+		for (FoodSource source : mFoodSourceList) {
+			source.update(delta);
+		}
+		mFoodSourceList.removeAll(mFoodSourceToRemove);
+		mFoodSourceToRemove.clear();
+		mFoodSourceList.addAll(mFoodSourceToAdd);
+		mFoodSourceToAdd.clear();
+	}
+	
+	private void drawFoodSources() {
+		for (FoodSource source : mFoodSourceList) {
+			source.draw();
+		}
 	}
 	
 	private void collideOrConsume(AbstractEntityBot bot, Entity entity) {
