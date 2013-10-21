@@ -53,12 +53,7 @@ public class EntityBot extends AbstractEntityBot {
 	@Override
 	public void update(double delta) {
 		
-		// Here we are given delta, the time in ms since the last frame.
-		
-		System.out.println(delta);
-		
 		// New position
-//		Vector2f.add(getPosition(), getVelocity(), getPosition());
 		getPosition().x += (float) (getVelocity().x * delta);
 		getPosition().y += (float) (getVelocity().y * delta);
 		Vector2f.add(getVelocity(), (Vector2f) mResolvedForce.scale((float) (1.0/getSize())), getVelocity());
