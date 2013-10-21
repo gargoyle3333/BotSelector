@@ -21,8 +21,8 @@ public class EntityDiseasedBot extends AbstractEntityBotDecorator { //Decorator
 	}
 	
 	@Override
-	public void update() {
-		bot.update();
+	public void update(double delta) {
+		bot.update(delta);
 		if (diseaseList.size() < 1) {
 			EntityEventHandler.botDestroyed(this);
 			EntityEventHandler.botCreated(bot);

@@ -10,7 +10,6 @@ import net.bot.entities.AbstractEntityBot;
 import net.bot.entities.Entity;
 import net.bot.entities.Entity.State;
 import net.bot.entities.EntityBot;
-import net.bot.entities.EntityDiseasedBot;
 import net.bot.entities.EntityFoodSpeck;
 import net.bot.event.handler.DisplayEventHandler;
 import net.bot.event.handler.EntityEventHandler;
@@ -99,44 +98,19 @@ public class MainModel {
 			}
 		});
 		
-/*		DisplayEventHandler.addListener(new IDisplayEventListener() {
-			@Override
-			public void onUpdate(double delta) {
-				// Complete our add/remove operations
-				
-				// Food
-				// Special operation when removing, in that we need to replace lost food
-				for (int i = 0; i < mFoodEntityToRemove.size(); i++) {
-					mFoodEntityList.remove(mFoodEntityToRemove.get(i));
-					EntityEventHandler.foodCreated(new EntityFoodSpeck());
-				}
-				mFoodEntityToRemove.clear();
-				mFoodEntityList.addAll(mFoodEntityToAdd);
-				mFoodEntityToAdd.clear();
-				
-				// Bots
-//				mBotEntityList.removeAll(mBotEntityToRemove);
-				for (EntityBot bot : mBotEntityToRemove) {
-					mBotEntityList.remove(bot);
-				}
-				mBotEntityToRemove.clear();
-				mBotEntityList.addAll(mBotEntityToAdd);
-				mBotEntityToAdd.clear();
-			}
-		}); */
 	}
 	
 	public void updateEntities(double delta) {
 		
 		// Check for age in food specks
 		for (EntityFoodSpeck speck : mFoodEntityList) { 
-			speck.update();
+			speck.update(delta);
 		}
 		
 		// Sort out collisions
 		for (int i = 0; i < mBotEntityList.size(); i++) {
 			AbstractEntityBot bot = mBotEntityList.get(i);
-			bot.update();
+			bot.update(delta);
 			
 			// TODO remove after disease testing
 //			if (!bot.isDiseased()) {

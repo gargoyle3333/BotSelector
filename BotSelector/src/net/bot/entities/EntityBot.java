@@ -13,9 +13,6 @@ public class EntityBot extends AbstractEntityBot {
 	private static final float SPEED_MULTIPLIER = 1000F; // = 0.007 max, 0.002 min
 	private static final float MAX_SPEED = 0.003F;
 	
-//	private static final int FRAMES_BEFORE_FOOD_DECREMENT = 60;
-//	private static final float FOOD_DECREMENT = 0.005F;
-	
 	private static final float OFFSPRING_PROPORTION = 0.3F;
 	private static final float OFFSPRING_MIN_FOOD = 0.2F;
 	private static final float OFFSPRING_MAX_FOOD = 50F;
@@ -40,7 +37,7 @@ public class EntityBot extends AbstractEntityBot {
 		setVelocity(new Vector2f(xVel, yVel));
 		setSize(foodToSize(getFoodLevel()));
 		mResolvedForce = new Vector2f(0,0);
-//		mFramesAlive = 0;
+		
 	}
 	
 	public EntityBot(Color color, Vector2f position, Vector2f velocity, float foodLevel) {
@@ -55,7 +52,11 @@ public class EntityBot extends AbstractEntityBot {
 	}
 
 	@Override
-	public void update() {
+	public void update(double delta) {
+		
+		// Here we are given delta, the time in ms since the last frame.
+		
+		System.out.println(delta);
 		
 		// New position
 		Vector2f.add(getPosition(), getVelocity(), getPosition());
@@ -67,13 +68,6 @@ public class EntityBot extends AbstractEntityBot {
 		if (getPosition().y + getVelocity().y < 0 || getPosition().y + getVelocity().y > 1) {
 			getVelocity().y *= -1;
 		}
-		// Too old?
-//		if (++mFramesAlive % FRAMES_BEFORE_FOOD_DECREMENT == 0) {
-//			getFoodLevel() -= FOOD_DECREMENT;
-//		}
-//		if (getFoodLevel() < 0) {
-//			mState = State.STARVED;
-//		}
 		
 		// The bigger the bot, the more likely it is to spawn offspring
 		if (rand.nextFloat() < chanceOfSpawn(getFoodLevel(), OFFSPRING_MIN_FOOD, OFFSPRING_MAX_FOOD)) {

@@ -79,7 +79,7 @@ public abstract class Entity {
 		mState = newState;
 	}
 	
-	public abstract void update();
+	public abstract void update(double delta);
 	public abstract void draw();
 	public abstract void consume(Entity entity);
 
