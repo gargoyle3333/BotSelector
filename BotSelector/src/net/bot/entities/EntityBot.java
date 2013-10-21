@@ -8,10 +8,9 @@ import org.lwjgl.util.vector.Vector2f;
 
 public class EntityBot extends AbstractEntityBot {
 	
-	private static final int MAX_SPAWN_SPEED = 7;
-	private static final int MIN_SPAWN_SPEED = 2;
-	private static final float SPEED_MULTIPLIER = 1000F; // = 0.007 max, 0.002 min
-	private static final float MAX_SPEED = 0.003F;
+	private static final float MAX_SPAWN_SPEED = 0.0002f; // speed is in m/ms
+	private static final float MIN_SPAWN_SPEED = 0.00001f;
+	private static final float MAX_SPEED = 0.0002F;
 	
 	private static final float OFFSPRING_PROPORTION = 0.3F;
 	private static final float OFFSPRING_MIN_FOOD = 0.2F;
@@ -28,8 +27,8 @@ public class EntityBot extends AbstractEntityBot {
 		setPosition(new Vector2f(rand.nextFloat(), rand.nextFloat()));
 		
 		// Any neater way to do this?
-		float xVel = (float) ((rand.nextInt(MAX_SPAWN_SPEED-MIN_SPAWN_SPEED) + MIN_SPAWN_SPEED)/SPEED_MULTIPLIER);
-		float yVel = (float) ((rand.nextInt(MAX_SPAWN_SPEED-MIN_SPAWN_SPEED) + MIN_SPAWN_SPEED)/SPEED_MULTIPLIER);
+		float xVel = (rand.nextFloat() * (MAX_SPAWN_SPEED-MIN_SPAWN_SPEED) + MIN_SPAWN_SPEED);
+		float yVel = (rand.nextFloat() * (MAX_SPAWN_SPEED-MIN_SPAWN_SPEED) + MIN_SPAWN_SPEED);
 		if (rand.nextBoolean()) xVel *= -1;
 		if (rand.nextBoolean()) yVel *= -1;
 		
@@ -59,7 +58,9 @@ public class EntityBot extends AbstractEntityBot {
 		System.out.println(delta);
 		
 		// New position
-		Vector2f.add(getPosition(), getVelocity(), getPosition());
+//		Vector2f.add(getPosition(), getVelocity(), getPosition());
+		getPosition().x += (float) (getVelocity().x * delta);
+		getPosition().y += (float) (getVelocity().y * delta);
 		Vector2f.add(getVelocity(), (Vector2f) mResolvedForce.scale((float) (1.0/getSize())), getVelocity());
 		// Bounce off walls
 		if (getPosition().x + getVelocity().x < 0 || getPosition().x + getVelocity().x > 1) {
