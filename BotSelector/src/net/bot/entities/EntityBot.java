@@ -10,14 +10,14 @@ public class EntityBot extends AbstractEntityBot {
 	
 	private static final float MAX_SPAWN_SPEED = 0.0002f; // speed is in m/ms
 	private static final float MIN_SPAWN_SPEED = 0.00001f;
-	private static final float MAX_SPEED = 0.0002F;
+	private static final float MAX_SPEED = 0.0003F;
 	
 	private static final float OFFSPRING_PROPORTION = 0.3F;
 	private static final float OFFSPRING_MIN_FOOD = 0.2F;
 	private static final float OFFSPRING_MAX_FOOD = 50F;
 	
 	private static final float MAXIMUM_FORCE_DISTANCE = 0.3F;
-	private static final float G = 0.0003F;
+	private static final float G = 0.000008F;
 	
 	private Vector2f mResolvedForce;
 	
@@ -185,7 +185,8 @@ public class EntityBot extends AbstractEntityBot {
 		}
 		
 		// Find magnitude of direction vector
-		double force = (G * (getSize() * entity.getSize()))/(length*length*length);
+		double force = (G * (getSize() * entity.getSize()))/(length*length);
+		// We already have the direction vector, so we should just scale it to force.
 		Vector2f resolved = new Vector2f(
 				(float)(force * displacement.x), 
 				(float)(force * displacement.y));
