@@ -24,4 +24,8 @@ public class Chromosome {
 		return mAlleleList;
 	}
 	
+	public void setAlleleList(Allele[] list) {
+		mAlleleList = list;
+	}
+	
 }

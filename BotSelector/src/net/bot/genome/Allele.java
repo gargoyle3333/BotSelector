@@ -10,6 +10,7 @@ public class Allele implements Serializable {
 	public enum Type {
 		MAX_SPEED, MAX_ACC, DISEASE_RESISTANCE
 		// TODO add a few more...
+		// TODO every value added must be added to the builder AND the genome decoder
 	}
 
 	public Allele(Type type, Object value) {
