@@ -97,7 +97,7 @@ public class Genome implements Cloneable {
 	}
 	
 	public Chromosome getRandomChromosome() {
-		return RandomUtil.rand.nextBoolean() ? chromosomeA : chromosomeB;
+		return RandomUtil.rand.nextBoolean() ? chromosomeA.clone() : chromosomeB.clone();
 	}
 	
 	public Genome clone() {

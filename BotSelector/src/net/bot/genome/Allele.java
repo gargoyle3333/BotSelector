@@ -8,7 +8,10 @@ public class Allele implements Serializable {
 	private Object mValue; // Very general, this could be used for anything
 
 	public enum Type {
-		MAX_SPEED, MAX_ACC, DISEASE_RESISTANCE
+		MAX_SPEED, 
+		MAX_ACC, 
+		DISEASE_RESISTANCE,
+		COLOR,
 		// TODO add a few more...
 		// TODO every value added must be added to the builder AND the genome decoder
 	}
