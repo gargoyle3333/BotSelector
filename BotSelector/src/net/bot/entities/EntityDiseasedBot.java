@@ -99,11 +99,6 @@ public class EntityDiseasedBot extends AbstractEntityBotDecorator { //Decorator
 	}
 
 	@Override
-	public void setColor(Color color) {
-		bot.setColor(color);
-	}
-
-	@Override
 	public void setSize(float size) {
 		bot.setSize(size);
 	}

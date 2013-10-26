@@ -1,8 +1,12 @@
 package net.bot.genome;
 
+import java.util.Random;
+
 import net.bot.genome.Allele.Type;
 import net.bot.genome.Chromosome.ChromosomeType;
 import net.bot.util.RandomUtil;
+
+import org.lwjgl.util.Color;
 
 public class ChromosomeBuilder {
 	
@@ -76,12 +80,19 @@ public class ChromosomeBuilder {
 			return generateRandomMaxAcc();
 		case DISEASE_RESISTANCE:
 			return generateRandomDiseaseResistance();
+		case COLOR:
+			return generateRandomColor();
 		default:
 			System.err.println("Unknown allele type in ChromosomeBuilder");
 		}
 		return null;
 	}
 	
+	private static Allele generateRandomColor() {
+		Random r = RandomUtil.rand;
+		return new Allele(Type.COLOR, new Color(r.nextInt(255), r.nextInt(255), r.nextInt(255)));
+	}
+
 	private static Allele generateRandomMaxSpeed() {
 		return new Allele(Type.MAX_SPEED, 
 				RandomUtil.rand.nextFloat() *

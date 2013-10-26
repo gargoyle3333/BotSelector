@@ -2,12 +2,15 @@ package net.bot.genome;
 
 import net.bot.util.RandomUtil;
 
+import org.lwjgl.util.Color;
+
 public class Genome implements Cloneable {
 	
 	public Gender mGender;
 	public Chromosome chromosomeA, chromosomeB;
 	
 	private double mMaxSpeed, mMaxAcc, mDiseaseResistance;
+	private Color mColor;
 	
 	public Gender getGender() {
 		return mGender;
@@ -40,7 +43,15 @@ public class Genome implements Cloneable {
 	public void setDiseaseResistance(double diseaseResistance) {
 		mDiseaseResistance = diseaseResistance;
 	}
-
+	
+	public Color getColor() {
+		return mColor;
+	}
+	
+	public void setColor(Color color) {
+		mColor = color;
+	}
+	
 	public enum Gender {
 		MALE,
 		FEMALE
@@ -62,6 +73,7 @@ public class Genome implements Cloneable {
 		} else {
 			ch = chromosomeB;
 		}
+		// TODO change this so it actually works for non-double values
 		ch.getAlleleList()[RandomUtil.rand.nextInt(ch.getAlleleList().length)].setValue(RandomUtil.rand.nextDouble());
 		calculateAttributes();
 	}
@@ -87,6 +99,9 @@ public class Genome implements Cloneable {
 			case DISEASE_RESISTANCE:
 				double diseaseA = (double)listA[i].getValue(), diseaseB = (double)listB[i].getValue();
 				mDiseaseResistance = Math.max(diseaseA, diseaseB);
+				break;
+			case COLOR:
+				mColor = (Color) listA[i].getValue();
 				break;
 			default:
 				// ??

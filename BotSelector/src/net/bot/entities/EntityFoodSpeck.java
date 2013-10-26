@@ -38,9 +38,8 @@ public class EntityFoodSpeck extends Entity {
 		
 		glPushMatrix();
 		
-		Color color = getColor();
 		Vector2f position = getPosition();
-		glColor3f(color.getRed()/256F, color.getGreen()/256F, color.getBlue()/256F);
+		glColor3f(1F, 1F, 1F);
 		glTranslatef(position.x, position.y, 0);
 		
 		glBegin(GL_QUADS);
@@ -53,6 +52,10 @@ public class EntityFoodSpeck extends Entity {
 		
 		glPopMatrix();
 		
+	}
+	
+	public Color getColor() {
+		return new Color(255, 255, 255);
 	}
 
 	@Override

@@ -35,7 +35,6 @@ public class EntityBot extends AbstractEntityBot {
 	
 	public EntityBot() {
 		super();
-		this.setColor(new Color(rand.nextInt(256), rand.nextInt(256), rand.nextInt(256)));
 		setPosition(new Vector2f(rand.nextFloat(), rand.nextFloat()));
 		
 		// Any neater way to do this?
@@ -55,7 +54,7 @@ public class EntityBot extends AbstractEntityBot {
 	
 	public EntityBot(Color color, Vector2f position, Vector2f velocity, float foodLevel, Genome genome) {
 		super();
-		setColor(color);
+		
 		setPosition(position);
 		setVelocity(velocity);
 		setFoodLevel(foodLevel);
@@ -119,8 +118,9 @@ public class EntityBot extends AbstractEntityBot {
 		
 		
 		float size = getSize();
+		Color color = mGenome.getColor();
 		glBegin(GL_TRIANGLES);
-		glColor3f(getColor().getRed()/256F, getColor().getGreen()/256F, getColor().getBlue()/256F);
+		glColor3f(color.getRed()/256F, color.getGreen()/256F, color.getBlue()/256F);
 		glVertex3f(0, size, 0);
 		glVertex3f(size, -size, 0);
 		glVertex3f(-size, -size, 0);
@@ -208,7 +208,9 @@ public class EntityBot extends AbstractEntityBot {
 				(float)(force * displacement.y));
 		
 		// Run from larger entity or same species.
-		if (entity.getSize() > getSize() || entity.getColor().equals(getColor())) {
+		Color color = entity.getColor();
+		if (entity.getSize() > getSize()
+				|| entity.getColor().equals(mGenome.getColor())) {
 			resolved.negate();
 		}
 		Vector2f.add(mResolvedForce, resolved, mResolvedForce);
@@ -216,5 +218,9 @@ public class EntityBot extends AbstractEntityBot {
 	
 	public boolean isDiseased() {
 		return false;
+	}
+	
+	public Color getColor() {
+		return mGenome.getColor();
 	}
 }

@@ -29,8 +29,8 @@ public class Chromosome implements Cloneable {
 	
 	public Chromosome clone() {
 		Chromosome c = new Chromosome(mType);
-		Allele[] list = new Allele[ChromosomeType.values().length];
-		for (int i = 0; i < ChromosomeType.values().length; i++) {
+		Allele[] list = new Allele[Allele.Type.values().length];
+		for (int i = 0; i < Allele.Type.values().length; i++) {
 			list[i] = new Allele(mAlleleList[i].getType(), mAlleleList[i].getValue());
 		}
 		c.setAlleleList(list);
