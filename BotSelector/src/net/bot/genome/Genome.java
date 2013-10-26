@@ -2,20 +2,52 @@ package net.bot.genome;
 
 import net.bot.util.RandomUtil;
 
-public class Genome {
+public class Genome implements Cloneable {
 	
-	public Gender gender;
+	public Gender mGender;
 	public Chromosome chromosomeA, chromosomeB;
 	
-	public double maxSpeed, maxAcc, diseaseResistance;
+	private double mMaxSpeed, mMaxAcc, mDiseaseResistance;
 	
+	public Gender getGender() {
+		return mGender;
+	}
+
+	public void setGender(Gender gender) {
+		mGender = gender;
+	}
+
+	public double getMaxSpeed() {
+		return mMaxSpeed;
+	}
+
+	public void setMaxSpeed(double maxSpeed) {
+		mMaxSpeed = maxSpeed;
+	}
+
+	public double getMaxAcc() {
+		return mMaxAcc;
+	}
+
+	public void setMaxAcc(double maxAcc) {
+		mMaxAcc = maxAcc;
+	}
+
+	public double getDiseaseResistance() {
+		return mDiseaseResistance;
+	}
+
+	public void setDiseaseResistance(double diseaseResistance) {
+		mDiseaseResistance = diseaseResistance;
+	}
+
 	public enum Gender {
 		MALE,
 		FEMALE
 	}
 	
 	public Genome(Chromosome A, Chromosome B) {
-		gender = A.getType() != B.getType() ? Gender.MALE : Gender.FEMALE;
+		mGender = A.getType() != B.getType() ? Gender.MALE : Gender.FEMALE;
 		chromosomeA = A;
 		chromosomeB = B;
 		
@@ -46,15 +78,15 @@ public class Genome {
 			switch (listA[i].getType()) {
 			case MAX_SPEED:
 				double speedA = (double)listA[i].getValue(), speedB = (double)listB[i].getValue();
-				maxSpeed = speedA > speedB ? speedA : speedB;
+				mMaxSpeed = Math.max(speedA, speedB);
 				break;
 			case MAX_ACC:
 				double accA = (double)listA[i].getValue(), accB = (double)listB[i].getValue();
-				maxAcc = accA > accB ? accA : accB;
+				mMaxAcc = Math.max(accA, accB);
 				break;
 			case DISEASE_RESISTANCE:
 				double diseaseA = (double)listA[i].getValue(), diseaseB = (double)listB[i].getValue();
-				diseaseResistance = diseaseA > diseaseB ? diseaseA : diseaseB;
+				mDiseaseResistance = Math.max(diseaseA, diseaseB);
 				break;
 			default:
 				// ??
@@ -64,7 +96,12 @@ public class Genome {
 		}
 	}
 	
-	// This class to work out all the speed etc.?
-	// Add method to get a chromosome for mating
-
+	public Chromosome getRandomChromosome() {
+		return RandomUtil.rand.nextBoolean() ? chromosomeA : chromosomeB;
+	}
+	
+	public Genome clone() {
+		return new Genome(chromosomeA.clone(), chromosomeB.clone());
+	}
+	
 }

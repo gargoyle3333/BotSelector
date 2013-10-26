@@ -1,16 +1,28 @@
 package net.bot.entities;
 
-import net.bot.event.handler.EntityEventHandler;
 import static net.bot.util.RandomUtil.rand;
-import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
+import static org.lwjgl.opengl.GL11.glBegin;
+import static org.lwjgl.opengl.GL11.glColor3f;
+import static org.lwjgl.opengl.GL11.glEnd;
+import static org.lwjgl.opengl.GL11.glPopMatrix;
+import static org.lwjgl.opengl.GL11.glPushMatrix;
+import static org.lwjgl.opengl.GL11.glRotated;
+import static org.lwjgl.opengl.GL11.glTranslatef;
+import static org.lwjgl.opengl.GL11.glVertex3f;
+import net.bot.event.handler.EntityEventHandler;
+import net.bot.genome.Genome;
+import net.bot.genome.GenomeBuilder;
+
 import org.lwjgl.util.Color;
 import org.lwjgl.util.vector.Vector2f;
 
 public class EntityBot extends AbstractEntityBot {
 	
+	private Genome mGenome;
+	
 	private static final float MAX_SPAWN_SPEED = 0.0002f; // speed is in m/ms
 	private static final float MIN_SPAWN_SPEED = 0.00001f;
-	private static final float MAX_SPEED = 0.0003F;
 	
 	private static final float OFFSPRING_PROPORTION = 0.3F;
 	private static final float OFFSPRING_MIN_FOOD = 0.2F;
@@ -37,9 +49,11 @@ public class EntityBot extends AbstractEntityBot {
 		setSize(foodToSize(getFoodLevel()));
 		mResolvedForce = new Vector2f(0,0);
 		
+		mGenome = GenomeBuilder.generateRandomGenome();
+		
 	}
 	
-	public EntityBot(Color color, Vector2f position, Vector2f velocity, float foodLevel) {
+	public EntityBot(Color color, Vector2f position, Vector2f velocity, float foodLevel, Genome genome) {
 		super();
 		setColor(color);
 		setPosition(position);
@@ -48,6 +62,8 @@ public class EntityBot extends AbstractEntityBot {
 		setSize(foodToSize(foodLevel));
 		
 		mResolvedForce = new Vector2f(0,0);
+		
+		mGenome = genome;
 	}
 
 	@Override
@@ -70,9 +86,9 @@ public class EntityBot extends AbstractEntityBot {
 			spawnClone();
 		}
 		
-		float l;
-		if ((l = getVelocity().length()) > MAX_SPEED) {
-			getVelocity().set((getVelocity().x/l)*MAX_SPEED, (getVelocity().y/l)*MAX_SPEED);
+		float l, maxSpeed = (float) mGenome.getMaxSpeed();
+		if ((l = getVelocity().length()) > maxSpeed) {
+			getVelocity().set((getVelocity().x/l)*maxSpeed, (getVelocity().y/l)*maxSpeed);
 		}
 		
 		setSize(foodToSize(getFoodLevel()));
@@ -164,7 +180,7 @@ public class EntityBot extends AbstractEntityBot {
 		// Note: this may well trap the offspring in a wall.
 		
 		// Create the offspring.
-		EntityBot offspring = new EntityBot(offspringColor, offspringPosition, offspringVelocity, offspringFood);
+		EntityBot offspring = new EntityBot(offspringColor, offspringPosition, offspringVelocity, offspringFood, mGenome.clone());
 		EntityEventHandler.botCreated(offspring);
 		
 	}

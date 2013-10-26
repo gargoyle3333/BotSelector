@@ -6,7 +6,7 @@ import net.bot.util.RandomUtil;
 
 public class ChromosomeBuilder {
 	
-	private static final double MAX_SPEED_MINIMUM = 0.0001F, MAX_SPEED_MAXIMUM = 0.0005F;
+	private static final double MAX_SPEED_MINIMUM = 0.0001F, MAX_SPEED_MAXIMUM = 0.0010F;
 	// TODO find better values for these
 	private static final double MAX_ACC_MINIMUM = 0.0002F, MAX_ACC_MAXIMUM = 0.0005F;
 	private static final double DISEASE_RESISTANCE_MINIMUM = 0.0002F, DISEASE_RESISTANCE_MAXIMUM = 0.0005F;
@@ -48,13 +48,17 @@ public class ChromosomeBuilder {
 		alleleList[Allele.Type.DISEASE_RESISTANCE.ordinal()] = new Allele(Allele.Type.DISEASE_RESISTANCE, resistance);
 	}
 	
+	public void setAttribute(Allele.Type type, Object value) {
+		alleleList[type.ordinal()] = new Allele(type, value);
+	}
+	
 	public static Chromosome generateRandomChromosome() {
 		
 		Type[] values = Type.values();
 		Allele[] chromosome = new Allele[values.length];
 		
 		for (Type t : values) {
-			chromosome[t.ordinal()] = new Allele(t, generateRandomOfType(t));
+			chromosome[t.ordinal()] = generateRandomOfType(t);
 		}
 		
 		Chromosome.ChromosomeType type = RandomUtil.rand.nextBoolean() ? ChromosomeType.X : ChromosomeType.Y;

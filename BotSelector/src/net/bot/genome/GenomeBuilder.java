@@ -8,6 +8,4 @@ public class GenomeBuilder {
 		return new Genome(ChromosomeBuilder.generateRandomChromosome(), ChromosomeBuilder.generateRandomChromosome());
 	}
 
-	
-	
 }
