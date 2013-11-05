@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.bot.entities.AbstractEntityBot;
-import net.bot.entities.EntityBot;
 import net.bot.entities.EntityFoodSpeck;
 import net.bot.event.listener.IEntityEventListener;
 

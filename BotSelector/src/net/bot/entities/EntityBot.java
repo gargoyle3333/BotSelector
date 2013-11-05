@@ -208,7 +208,6 @@ public class EntityBot extends AbstractEntityBot {
 				(float)(force * displacement.y));
 		
 		// Run from larger entity or same species.
-		Color color = entity.getColor();
 		if (entity.getSize() > getSize()
 				|| entity.getColor().equals(mGenome.getColor())) {
 			resolved.negate();
@@ -223,4 +222,9 @@ public class EntityBot extends AbstractEntityBot {
 	public Color getColor() {
 		return mGenome.getColor();
 	}
+	
+	public Genome getGenome() {
+		return mGenome;
+	}
+	
 }

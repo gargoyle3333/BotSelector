@@ -1,7 +1,6 @@
 package net.bot.event.listener;
 
 import net.bot.entities.AbstractEntityBot;
-import net.bot.entities.EntityBot;
 import net.bot.entities.EntityFoodSpeck;
 
 public interface IEntityEventListener {

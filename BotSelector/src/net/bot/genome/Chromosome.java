@@ -1,7 +1,14 @@
 package net.bot.genome;
 
-public class Chromosome implements Cloneable {
+import java.io.Serializable;
+
+public class Chromosome implements Cloneable, Serializable {
 	
+	/**
+	 * Generated Serial Version, to be updated whenever this class is
+	 */
+	private static final long serialVersionUID = -1309006321170290973L;
+
 	private Allele[] mAlleleList = new Allele[ChromosomeType.values().length];
 	
 	private ChromosomeType mType;

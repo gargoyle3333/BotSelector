@@ -4,6 +4,10 @@ import java.io.Serializable;
 
 public class Allele implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -7202693786366006746L;
 	private Type mType;
 	private Object mValue; // Very general, this could be used for anything
 

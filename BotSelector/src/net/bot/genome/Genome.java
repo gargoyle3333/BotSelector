@@ -1,10 +1,17 @@
 package net.bot.genome;
 
+import java.io.Serializable;
+
 import net.bot.util.RandomUtil;
 
 import org.lwjgl.util.Color;
 
-public class Genome implements Cloneable {
+public class Genome implements Cloneable, Serializable {
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 7518504562267418442L;
 	
 	public Gender mGender;
 	public Chromosome chromosomeA, chromosomeB;
