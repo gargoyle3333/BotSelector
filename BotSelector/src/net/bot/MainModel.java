@@ -10,6 +10,7 @@ import net.bot.entities.AbstractEntityBot;
 import net.bot.entities.Entity;
 import net.bot.entities.Entity.State;
 import net.bot.entities.EntityBot;
+import net.bot.entities.EntityDiseasedBot;
 import net.bot.entities.EntityFoodSpeck;
 import net.bot.event.handler.DisplayEventHandler;
 import net.bot.event.handler.EntityEventHandler;
@@ -62,7 +63,7 @@ public class MainModel {
 			EntityEventHandler.addListener(new IEntityEventListener() {
 			@Override
 			public void onFoodDestroyed(EntityFoodSpeck speck) {
-				mFoodEntityList.add(speck);
+				mFoodEntityList.remove(speck);
 			}
 			@Override
 			public void onFoodCreated(EntityFoodSpeck speck) {
@@ -70,7 +71,7 @@ public class MainModel {
 			}
 			@Override
 			public void onBotDestroyed(AbstractEntityBot bot) {
-				mBotEntityList.add(bot);
+				mBotEntityList.remove(bot);
 			}
 			@Override
 			public void onBotCreated(AbstractEntityBot bot) {
@@ -107,17 +108,21 @@ public class MainModel {
 			speck.update(delta);
 		}
 		
+		// TODO remove after disease testing
+		for (AbstractEntityBot bot: mBotEntityList) {
+			if (!bot.isDiseased()) {
+				EntityDiseasedBot newBot = new EntityDiseasedBot(bot);
+				mBotsToAdd.add(newBot);
+				mBotsToRemove.add(bot);
+			}
+		}
+		
 		// Sort out collisions
 		for (int i = 0; i < mBotEntityList.size(); i++) {
 			AbstractEntityBot bot = mBotEntityList.get(i);
 			bot.update(delta);
 			
-			// TODO remove after disease testing
-//			if (!bot.isDiseased()) {
-//				EntityDiseasedBot newBot = new EntityDiseasedBot(bot);
-//				mBotsToAdd.add(newBot);
-//				mBotsToRemove.add(bot);
-//			}
+
 			for (int j = 0; j < mBotEntityList.size(); j++) {
 				if (j > i) {
 					collideOrConsume(bot, mBotEntityList.get(j));
@@ -200,8 +205,13 @@ public class MainModel {
 				
 				bot.setVelocity(newBot);
 				entity.setVelocity(newEntity);
-				
+				if (entity instanceof AbstractEntityBot) {
+					bot.resolveContagiousDiseases((AbstractEntityBot) entity);
+				}
 			} else if (bot.getColor().equals(entity.getColor())) {
+				if (entity instanceof AbstractEntityBot) {
+					bot.resolveContagiousDiseases((AbstractEntityBot) entity);
+				}
 				return;
 			} else if (bot.getSize() < entity.getSize()) {
 				entity.consume(bot);

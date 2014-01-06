@@ -1,8 +1,13 @@
 package net.bot.entities;
 
+import java.util.LinkedList;
+import java.util.List;
+
+import net.bot.disease.Disease;
 import net.bot.event.handler.EntityEventHandler;
 import static net.bot.util.RandomUtil.rand;
 import static org.lwjgl.opengl.GL11.*;
+
 import org.lwjgl.util.Color;
 import org.lwjgl.util.vector.Vector2f;
 
@@ -16,7 +21,7 @@ public class EntityBot extends AbstractEntityBot {
 	private static final float OFFSPRING_MIN_FOOD = 0.2F;
 	private static final float OFFSPRING_MAX_FOOD = 50F;
 	
-	private static final float MAXIMUM_FORCE_DISTANCE = 0.3F;
+	private static final float MAXIMUM_FORCE_DISTANCE = 3F;
 	private static final float G = 0.000008F;
 	
 	private Vector2f mResolvedForce;
@@ -200,5 +205,16 @@ public class EntityBot extends AbstractEntityBot {
 	
 	public boolean isDiseased() {
 		return false;
+	}
+
+	@Override
+	public void resolveContagiousDiseases(AbstractEntityBot bot) {
+		if (bot.isDiseased()) {
+			List<Disease> diseases = ((EntityDiseasedBot)bot).spreadDisease();
+			if (!diseases.isEmpty()) {
+				EntityEventHandler.botDestroyed(this);
+				EntityEventHandler.botCreated(new EntityDiseasedBot(this,diseases));
+			}
+		}
 	}
 }
