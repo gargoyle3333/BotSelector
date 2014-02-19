@@ -4,6 +4,7 @@ import static net.bot.util.SimRegisterConstants.FOOD_SPECKS;
 import static net.bot.util.SimRegisterConstants.INITIAL_BOT_ENTITIES;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import net.bot.entities.AbstractEntityBot;
@@ -17,6 +18,8 @@ import net.bot.event.handler.EntityEventHandler;
 import net.bot.event.listener.IDisplayEventListener;
 import net.bot.event.listener.IEntityEventListener;
 import net.bot.input.KeyboardInput;
+import net.bot.music.Sound;
+import net.bot.music.SoundBank;
 
 import org.lwjgl.util.vector.Vector2f;
 
@@ -24,8 +27,47 @@ public class MainModel {
 	
 	private List<AbstractEntityBot> mBotEntityList, mBotsToAdd, mBotsToRemove;
 	private List<EntityFoodSpeck> mFoodEntityList, mFoodToAdd, mFoodToRemove;
+	private List<SoundBank> soundBanks;
+	private int currentSoundBank;
+	private double currentBarTime;
 	
 	public MainModel() {
+		currentBarTime = 0.0;
+		/*
+		SoundBank aBank = new SoundBank();
+		aBank.addSound(0, new Sound("c3.wav", 0));
+		aBank.addSound(1, new Sound("e3.wav", 1));
+		aBank.addSound(2, new Sound("g3.wav", 2));
+		SoundBank fBank = new SoundBank();
+		fBank.addSound(0, new Sound("f3.wav", 0));
+		fBank.addSound(1, new Sound("a3.wav", 1));
+		fBank.addSound(2, new Sound("c3.wav", 2));
+		SoundBank cBank = new SoundBank();
+		cBank.addSound(0, new Sound("c3.wav", 0));
+		cBank.addSound(1, new Sound("e3.wav", 1));
+		cBank.addSound(2, new Sound("g3.wav", 2));
+		SoundBank gBank = new SoundBank();
+		gBank.addSound(0, new Sound("g3.wav", 0));
+		gBank.addSound(1, new Sound("b3.wav", 1));
+		gBank.addSound(2, new Sound("d3.wav", 2));
+		soundBanks = new LinkedList<SoundBank>();
+		soundBanks.add(aBank);
+		soundBanks.add(fBank);
+		soundBanks.add(cBank);
+		soundBanks.add(gBank);
+		*/
+		soundBanks = new LinkedList<SoundBank>();
+		SoundBank soundBank = new SoundBank();
+		soundBank.addSound(0, new Sound("c3.wav", 0));
+		soundBank.addSound(1, new Sound("a3.wav", 1));
+		soundBank.addSound(2, new Sound("e3.wav", 2));
+		soundBank.addSound(3, new Sound("g3.wav", 3));
+		soundBank.addSound(4, new Sound("g3.wav", 4));
+		soundBank.addSound(5, new Sound("a3.wav", 5));
+		soundBank.addSound(6, new Sound("c4.wav", 6));
+		soundBank.addSound(7, new Sound("c4.wav", 7));
+		soundBanks.add(soundBank);
+		
 		
 		DisplayEventHandler.addListener(new IDisplayEventListener() {
 			@Override
@@ -99,7 +141,11 @@ public class MainModel {
 	}
 	
 	public void updateEntities(double delta) {
-		
+		currentBarTime += delta;
+		if (currentBarTime > 2000) {
+			currentBarTime -= 2000;
+			currentSoundBank = (currentSoundBank + 1) % soundBanks.size();
+		}
 		// Check for age in food specks
 		for (EntityFoodSpeck speck : mFoodEntityList) { 
 			speck.update();
@@ -111,11 +157,11 @@ public class MainModel {
 			bot.update();
 			
 			// TODO remove after disease testing
-			if (!bot.isDiseased()) {
+		/*	if (!bot.isDiseased()) {
 				EntityDiseasedBot newBot = new EntityDiseasedBot(bot);
 				mBotsToAdd.add(newBot);
 				mBotsToRemove.add(bot);
-			}
+			} */
 			for (int j = 0; j < mBotEntityList.size(); j++) {
 				if (j > i) {
 					collideOrConsume(bot, mBotEntityList.get(j));
@@ -186,8 +232,12 @@ public class MainModel {
 			} else if (bot.getColor().equals(entity.getColor())) {
 				return;
 			} else if (bot.getSize() < entity.getSize()) {
+					soundBanks.get(currentSoundBank).playSound(entity.getSoundID());
+					soundBanks.get(currentSoundBank).playSound(bot.getSoundID());
 				entity.consume(bot);
 			} else if (bot.getSize() > entity.getSize()) {
+					soundBanks.get(currentSoundBank).playSound(entity.getSoundID());
+					soundBanks.get(currentSoundBank).playSound(bot.getSoundID());
 				bot.consume(entity);
 			}
 //			else if (bot.getSize() < entity.getSize()) {

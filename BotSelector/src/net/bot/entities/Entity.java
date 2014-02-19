@@ -13,6 +13,15 @@ public abstract class Entity {
 	private Vector2f mPosition, mVelocity;
 	private int mFramesAlive = 0;
 	private float mSize, mFoodLevel;
+	private int soundID;
+	
+	public void setSoundID(int soundID) {
+		this.soundID = soundID;
+	}
+	
+	public int getSoundID() {
+		return this.soundID;
+	}
 	
 	public void setFoodLevel(float foodLevel) {
 		this.mFoodLevel = foodLevel;

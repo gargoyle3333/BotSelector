@@ -27,7 +27,7 @@ public class EntityBot extends AbstractEntityBot {
 	
 	public EntityBot() {
 		super();
-		this.setColor(new Color(rand.nextInt(256), rand.nextInt(256), rand.nextInt(256)));
+		this.setColor(new Color(255, 0, 0));
 		setPosition(new Vector2f(rand.nextFloat(), rand.nextFloat()));
 		
 		// Any neater way to do this?
@@ -41,6 +41,8 @@ public class EntityBot extends AbstractEntityBot {
 		setSize(foodToSize(getFoodLevel()));
 		mResolvedForce = new Vector2f(0,0);
 //		mFramesAlive = 0;
+
+		setSoundID(rand.nextInt(8));
 	}
 	
 	public EntityBot(Color color, Vector2f position, Vector2f velocity, float foodLevel) {
@@ -52,6 +54,8 @@ public class EntityBot extends AbstractEntityBot {
 		setSize(foodToSize(foodLevel));
 		
 		mResolvedForce = new Vector2f(0,0);
+
+		setSoundID(rand.nextInt(8));
 	}
 
 	@Override

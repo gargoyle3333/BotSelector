@@ -127,4 +127,14 @@ public class EntityDiseasedBot extends AbstractEntityBotDecorator { //Decorator
 	public void setState(State newState) {
 		bot.setState(newState);
 	}
+	
+	@Override
+	public int getSoundID() {
+		return bot.getSoundID();
+	}
+	
+	@Override
+	public void setSoundID(int soundID) {
+		bot.setSoundID(soundID);
+	}
 }

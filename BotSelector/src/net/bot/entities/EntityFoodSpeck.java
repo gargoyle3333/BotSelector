@@ -26,6 +26,7 @@ public class EntityFoodSpeck extends Entity {
 		setPosition(new Vector2f(rand.nextFloat(), rand.nextFloat()));
 		setVelocity(new Vector2f(0,0));
 		setFoodLevel(getSize() * 10);
+		setSoundID(rand.nextInt(3));
 	}
 	
 	@Override
