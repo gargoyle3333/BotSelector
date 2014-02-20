@@ -21,8 +21,8 @@ public class EntityBot extends AbstractEntityBot {
 	private static final float OFFSPRING_MIN_FOOD = 0.2F;
 	private static final float OFFSPRING_MAX_FOOD = 50F;
 	
-	private static final float MAXIMUM_FORCE_DISTANCE = 3F;
-	private static final float G = 0.000008F;
+	private static final float MAXIMUM_FORCE_DISTANCE = 0.5F;
+	private static final float G = 0.00008F;
 	
 	private Vector2f mResolvedForce;
 	
@@ -180,6 +180,9 @@ public class EntityBot extends AbstractEntityBot {
 	 * @param entity
 	 */
 	public void addForce(Entity entity) {
+		if (entity.getColor().equals(getColor())) {
+			return;
+		} 
 		// Check distance
 		Vector2f displacement = new Vector2f(
 				entity.getPosition().x - getPosition().x, 
@@ -190,14 +193,15 @@ public class EntityBot extends AbstractEntityBot {
 		}
 		
 		// Find magnitude of direction vector
-		double force = (G * (getSize() * entity.getSize()))/(length*length);
+		double force = (G * (getSize() * entity.getSize()))/(length*length*length);
 		// We already have the direction vector, so we should just scale it to force.
 		Vector2f resolved = new Vector2f(
 				(float)(force * displacement.x), 
 				(float)(force * displacement.y));
 		
-		// Run from larger entity or same species.
-		if (entity.getSize() > getSize() || entity.getColor().equals(getColor())) {
+		// Run from larger entity
+		// Same species bots that are smaller do not affect this bot's movement
+		if (entity.getSize() > getSize()) {
 			resolved.negate();
 		}
 		Vector2f.add(mResolvedForce, resolved, mResolvedForce);

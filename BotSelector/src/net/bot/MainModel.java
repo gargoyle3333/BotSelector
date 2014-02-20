@@ -109,13 +109,13 @@ public class MainModel {
 		}
 		
 		// TODO remove after disease testing
-		for (AbstractEntityBot bot: mBotEntityList) {
+	/*	for (AbstractEntityBot bot: mBotEntityList) {
 			if (!bot.isDiseased()) {
 				EntityDiseasedBot newBot = new EntityDiseasedBot(bot);
 				mBotsToAdd.add(newBot);
 				mBotsToRemove.add(bot);
 			}
-		}
+		} */
 		
 		// Sort out collisions
 		for (int i = 0; i < mBotEntityList.size(); i++) {

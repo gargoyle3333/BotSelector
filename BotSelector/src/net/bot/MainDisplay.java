@@ -1,15 +1,18 @@
 package net.bot;
 
+import net.bot.entities.EntityBot;
+import net.bot.entities.EntityDiseasedBot;
 import net.bot.event.handler.DisplayEventHandler;
+import net.bot.event.handler.EntityEventHandler;
 import net.bot.event.handler.KeyboardEventHandler;
 import net.bot.event.listener.IKeyboardEventListener;
-
 import static net.bot.util.MainDisplayConstants.*;
 
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
+import org.lwjgl.util.Color;
 import org.lwjgl.util.vector.Vector2f;
 
 import static org.lwjgl.opengl.GL11.*;
@@ -55,6 +58,16 @@ public class MainDisplay {
 					break;
 				case Keyboard.KEY_RIGHT: 
 					arrowKeysPressed[3] = true;
+					break;
+				case Keyboard.KEY_R:
+					EntityBot redBot = new EntityBot();
+					redBot.setColor(new Color(255,0,0));
+					EntityEventHandler.botCreated(redBot);
+					break;
+				case Keyboard.KEY_B:
+					EntityBot blueBot = new EntityBot();
+					blueBot.setColor(new Color(0,0,255));
+					EntityEventHandler.botCreated(blueBot);
 					break;
 				default:
 					break;
