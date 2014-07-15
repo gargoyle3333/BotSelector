@@ -17,9 +17,9 @@ public class DisplayEventHandler {
 		displayEventListeners.remove(listener);
 	}
 	
-	public static void update(double delta) {
+	public static void update(double delta, boolean paused) {
 		for (IDisplayEventListener l : displayEventListeners) {
-			l.onUpdate(delta);
+			l.onUpdate(delta, paused);
 		}
 	}
 	

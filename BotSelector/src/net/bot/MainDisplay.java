@@ -19,6 +19,7 @@ public class MainDisplay {
 	private double lastFrameTime = System.currentTimeMillis();
 	
 	private boolean[] arrowKeysPressed;
+	private boolean paused;
 	
 	public MainDisplay() {
 		try {
@@ -75,6 +76,10 @@ public class MainDisplay {
 				case Keyboard.KEY_RIGHT: 
 					arrowKeysPressed[3] = false;
 					break;
+				case Keyboard.KEY_P: 
+					paused = !paused;
+					System.out.println("Simulation " + (paused ? "paused" : "resumed"));
+					break;
 				}
 			}
 		});
@@ -100,7 +105,7 @@ public class MainDisplay {
 			glLoadIdentity();
 			
 			// Update
-			DisplayEventHandler.update(getDelta());
+			DisplayEventHandler.update(getDelta(), paused);
 			
 			Display.update();
 			Display.sync(FRAMES_PER_SECOND); 

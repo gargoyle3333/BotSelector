@@ -33,10 +33,13 @@ public class MainModel {
 		
 		DisplayEventHandler.addListener(new IDisplayEventListener() {
 			@Override
-			public void onUpdate(double delta) {
-				updateEntities(delta);
+			public void onUpdate(double delta, boolean paused) {
+				if (!paused) {
+					updateEntities(delta);
+					updateFoodSources(delta);
+				}
+				// Always draw, regardless of pause state
 				drawEntities();
-				updateFoodSources(delta);
 				drawFoodSources();
 			}
 			

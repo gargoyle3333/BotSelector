@@ -11,8 +11,8 @@ public class KeyboardInput {
 	public KeyboardInput() {
 		DisplayEventHandler.addListener(new IDisplayEventListener() {
 			@Override
-			public void onUpdate(double delta) {
-				// Ignore delta
+			public void onUpdate(double delta, boolean paused) {
+				// Ignore delta & paused
 				pollKeyboard();
 			}
 		});
