@@ -14,11 +14,14 @@ import net.bot.entities.EntityFoodSpeck;
 import net.bot.event.handler.DisplayEventHandler;
 import net.bot.event.handler.EntityEventHandler;
 import net.bot.event.handler.FoodSourceEventHandler;
+import net.bot.event.handler.MouseEventHandler;
 import net.bot.event.listener.IDisplayEventListener;
 import net.bot.event.listener.IEntityEventListener;
 import net.bot.event.listener.IFoodSourceEventListener;
+import net.bot.event.listener.IMouseEventListener;
 import net.bot.food.FoodSource;
 import net.bot.input.KeyboardInput;
+import net.bot.input.MouseInput;
 import net.bot.util.RandomUtil;
 
 import org.lwjgl.util.vector.Vector2f;
@@ -28,6 +31,8 @@ public class MainModel {
 	private List<AbstractEntityBot> mBotEntityList, mBotsToAdd, mBotsToRemove;
 	private List<EntityFoodSpeck> mFoodEntityList, mFoodToAdd, mFoodToRemove;
 	private List<FoodSource> mFoodSourceList, mFoodSourceToAdd, mFoodSourceToRemove;
+	
+	private AbstractEntityBot mGrabbedBot;
 	
 	public MainModel() {
 		
@@ -45,7 +50,54 @@ public class MainModel {
 			
 		});
 		
-		// 
+		MouseEventHandler.addListener(new IMouseEventListener() {
+			@Override
+			public void onScrollWheelReleased(float absX, float absY) {}
+			@Override
+			public void onScrollWheelPressed(float absX, float absY) {}
+			@Override
+			public void onRightButtonReleased(float absX, float absY) {}
+			@Override
+			public void onRightButtonPressed(float absX, float absY) {}
+			@Override
+			public void onMouseMoved(float dX, float dY, float absX, float absY) {
+				if (mGrabbedBot != null) {
+					mGrabbedBot.setPosition(new Vector2f(absX, absY));
+				}
+			}
+			@Override
+			public void onLeftButtonReleased(float absX, float absY) {
+				mGrabbedBot = null;
+				System.out.println("Bot released");
+			}
+			@Override
+			public void onLeftButtonPressed(float absX, float absY) {
+				// Get bot from co-ordinates
+				
+				// Get first bot from list 
+				mGrabbedBot = mBotEntityList.get(0);
+				float dX, dX2, dY, dY2;
+				for (AbstractEntityBot b : mBotEntityList) {
+					dX = absX - b.getPosition().x;
+					dY = absY - b.getPosition().y;
+					dX2 = dX * dX;
+					dY2 = dY * dY;
+					
+					if (
+						Math.sqrt(Math.pow(absX - b.getPosition().x, 2) + Math.pow(absY - b.getPosition().y, 2))
+						<
+						Math.sqrt(Math.pow(absX - mGrabbedBot.getPosition().x, 2) + Math.pow(absY - b.getPosition().y, 2))
+							) {
+						mGrabbedBot = b;
+					}
+					
+				}
+				
+				System.out.println("New bot grabbed");
+				mGrabbedBot.setPosition(new Vector2f(absX, absY));
+				
+			}
+		});
 		
 		mBotEntityList = new ArrayList<AbstractEntityBot>();
 		for (int i = 0; i < INITIAL_BOT_ENTITIES; i++) {
@@ -235,6 +287,7 @@ public class MainModel {
 		new MainModel();
 		new KeyboardInput();
 		MainDisplay display = new MainDisplay();
+		new MouseInput();
 		display.run();
 	}
 
